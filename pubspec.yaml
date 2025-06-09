@@ -1,35 +1,102 @@
 name: tiiun
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.0-209.1.beta
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  firebase_core: ^3.6.0
-  cloud_firestore: ^5.6.8
-  firebase_auth: ^5.3.1
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  speech_to_text: ^7.0.0-beta.2 #
+  connectivity_plus: ^6.1.4
 
-  cupertino_icons: ^1.0.8
-  uuid: ^4.1.0
-  flutter_svg: ^2.0.7
+  # Firebase packages
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.0.0
+  google_sign_in: ^6.2.1
+  cloud_firestore: ^5.0.0
+  firebase_database: ^11.1.4
+  firebase_storage: ^12.4.5
+  firebase_analytics: ^11.0.0
+  firebase_messaging: ^15.2.5
+  firebase_remote_config: ^5.4.3
+  firebase_app_check: ^0.3.0+2
 
-  http: ^1.1.0
+  # State management
+  provider: ^6.1.1
+  flutter_riverpod: ^2.4.10
+
+  # UI packages
+  flutter_svg: ^2.0.10
+  google_fonts: ^6.1.0
+  flutter_markdown: ^0.6.18
+  intl: ^0.20.2
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+
+  # Voice and audio
+  just_audio: ^0.9.36
+  record: ^5.0.4
+  audio_session: ^0.1.18
+
+  # Speech recognition and synthesis
+  flutter_tts: ^3.8.5
+
+  # API communication
+  http: ^1.2.0
+  dio: ^5.4.0
+
+  # Storage
+  shared_preferences: ^2.2.3
+  path_provider: ^2.1.2
+
+  # Utilities
+  uuid: ^4.3.3
+  logger: ^2.0.2+1
+  url_launcher: ^6.2.4
+  image_picker: ^1.0.7
+  permission_handler: ^11.2.0
+  device_info_plus: ^9.1.2
+  package_info_plus: ^8.0.2 # <-- 이 부분을 6.0.0에서 7.0.0으로 변경
+  file_picker: ^10.1.9
+  share_plus: ^7.2.1
+
+  # AI and natural language processing
+  langchain: ^0.0.7
+  langchain_openai: ^0.0.5+1
+  langchain_google: ^0.0.10+1
+
+  # JSON serialization
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.9
 
-  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/contents/
+    - assets/images/diary/
+    - assets/images/display/
+    - assets/images/history/
+    - assets/images/logos/
+    - assets/images/mypage/
+    - assets/images/shop/
+    - assets/icons/
+    - assets/icons/buddy/
+    - assets/icons/community/
     - assets/icons/functions/
     - assets/icons/navbar/
     - assets/icons/sentiment/

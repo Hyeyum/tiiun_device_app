@@ -1,3 +1,4 @@
+// android/build.gradle.kts - 이 상태가 올바름
 allprojects {
     repositories {
         google()

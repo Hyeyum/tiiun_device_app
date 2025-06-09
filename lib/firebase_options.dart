@@ -57,6 +57,7 @@ class DefaultFirebaseOptions {
     authDomain: 'test-f55dc.firebaseapp.com',
     storageBucket: 'test-f55dc.firebasestorage.app',
     measurementId: 'G-CKZ12HVZ95',
+    databaseURL: 'https://test-f55dc-default-rtdb.asia-southeast1.firebasedatabase.app', // 추가
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -65,5 +66,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '937476920259',
     projectId: 'test-f55dc',
     storageBucket: 'test-f55dc.firebasestorage.app',
+    databaseURL: 'https://test-f55dc-default-rtdb.asia-southeast1.firebasedatabase.app', // 추가
   );
 }
