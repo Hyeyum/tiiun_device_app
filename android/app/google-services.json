@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "937476920259",
+    "firebase_url": "https://test-f55dc-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "test-f55dc",
     "storage_bucket": "test-f55dc.firebasestorage.app"
   },
@@ -48,6 +49,25 @@
         "mobilesdk_app_id": "1:937476920259:android:f52246e6d1da1b1c092376",
         "android_client_info": {
           "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC21qOaYen04oeJalZIrZiOk04qv7BYJgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937476920259:android:e33ba44b68cf5931092376",
+        "android_client_info": {
+          "package_name": "com.example.myapp_module"
         }
       },
       "oauth_client": [],
