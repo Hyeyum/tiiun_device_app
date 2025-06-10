@@ -16,7 +16,7 @@ class SensorData {
 
   factory SensorData.fromJson(String id, Map<dynamic, dynamic> json) {
     final timestampStr = json['timestamp']?.toString() ?? '';
-    
+
     return SensorData(
       id: id,
       humidity: _parseIntSafely(json['humidity']),

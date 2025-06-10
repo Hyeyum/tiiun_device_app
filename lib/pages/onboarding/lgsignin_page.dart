@@ -90,7 +90,7 @@ class _LGSigninPageState extends ConsumerState<LGSigninPage> { // State -> Consu
     try {
       // Provider를 통해 FirebaseService 접근
       final firebaseService = ref.read(firebaseServiceProvider);
-      
+
       final userModel = await firebaseService.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,

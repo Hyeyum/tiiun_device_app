@@ -18,7 +18,7 @@ class ConversationListPage extends ConsumerStatefulWidget {
 class _ConversationListPageState extends ConsumerState<ConversationListPage> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   List<ConversationWithLastMessage> _allConversations = [];
   List<ConversationWithLastMessage> _filteredConversations = [];
   bool _isSearching = false;
@@ -58,10 +58,10 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
         final summary = conv.conversation.summary?.toLowerCase() ?? '';
         final lastMessage = conv.lastMessage?.content.toLowerCase() ?? '';
         final query = _searchQuery.toLowerCase();
-        
-        return title.contains(query) || 
-               summary.contains(query) || 
-               lastMessage.contains(query);
+
+        return title.contains(query) ||
+            summary.contains(query) ||
+            lastMessage.contains(query);
       }).toList();
     }
   }
@@ -97,7 +97,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       try {
         final service = ref.read(conversationListServiceProvider);
         await service.deleteMultipleConversations(_selectedConversations.toList());
-        
+
         setState(() {
           _isSelectionMode = false;
           _selectedConversations.clear();
@@ -168,19 +168,19 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
         title: _isSelectionMode
             ? Text('${_selectedConversations.length}개 선택됨')
             : Text(
-                '대화 목록',
-                style: AppTypography.h3.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          '대화 목록',
+          style: AppTypography.h3.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: AppColors.main800,
         actions: [
           if (_isSelectionMode) ...[
             IconButton(
               icon: Icon(Icons.delete, color: Colors.white),
-              onPressed: _selectedConversations.isNotEmpty 
-                  ? _deleteSelectedConversations 
+              onPressed: _selectedConversations.isNotEmpty
+                  ? _deleteSelectedConversations
                   : null,
               tooltip: '선택한 대화 삭제',
             ),
@@ -266,11 +266,11 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
                   prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.grey.shade600),
-                          onPressed: () {
-                            _searchController.clear();
-                          },
-                        )
+                    icon: Icon(Icons.clear, color: Colors.grey.shade600),
+                    onPressed: () {
+                      _searchController.clear();
+                    },
+                  )
                       : null,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -291,7 +291,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
               data: (conversations) {
                 _allConversations = conversations;
                 _filterConversations();
-                
+
                 if (_filteredConversations.isEmpty) {
                   return _buildEmptyState();
                 }
@@ -346,13 +346,13 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
       floatingActionButton: _isSelectionMode
           ? null
           : FloatingActionButton.extended(
-              onPressed: () {
-                Navigator.pushNamed(context, '/sensor_monitor');
-              },
-              icon: Icon(Icons.sensors),
-              label: Text('센서 대화'),
-              backgroundColor: AppColors.main800,
-            ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/sensor_monitor');
+        },
+        icon: Icon(Icons.sensors),
+        label: Text('센서 대화'),
+        backgroundColor: AppColors.main800,
+      ),
     );
   }
 
@@ -373,7 +373,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
           ),
           SizedBox(height: 8),
           Text(
-            _isSearching 
+            _isSearching
                 ? '다른 키워드로 검색해보세요'
                 : '센서 모니터링으로 새로운 대화를 시작해보세요',
             style: AppTypography.b2.copyWith(color: Colors.grey.shade500),

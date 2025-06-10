@@ -28,7 +28,7 @@ class Message {
   final MessageType type;
 
   // ========== 추가 기능 필드들 (FireStore 스키마에는 없지만 앱 기능상 필요) ==========
-  
+
   /// 사용자 ID (앱 기능상 필요)
   final String userId;
 
@@ -128,14 +128,14 @@ class Message {
         conversationId: data['conversation_id'] ?? '',
         content: content,
         sender: MessageSender.values.firstWhere(
-          (e) => e.toString().split('.').last == (data['sender'] ?? 'user'),
+              (e) => e.toString().split('.').last == (data['sender'] ?? 'user'),
           orElse: () => MessageSender.user,
         ),
         createdAt: data['created_at'] is Timestamp
             ? (data['created_at'] as Timestamp).toDate()
             : DateTime.now(),
         type: MessageType.values.firstWhere(
-          (e) => e.toString().split('.').last == (data['type'] ?? 'text'),
+              (e) => e.toString().split('.').last == (data['type'] ?? 'text'),
           orElse: () => MessageType.text,
         ),
         // 추가 기능 필드들 - 모두 snake_case에서 읽기
@@ -148,7 +148,7 @@ class Message {
             : null,
         attachments: attachments,
         status: MessageStatus.values.firstWhere(
-          (e) => e.toString().split('.').last == (data['status'] ?? 'sent'),
+              (e) => e.toString().split('.').last == (data['status'] ?? 'sent'),
           orElse: () => MessageStatus.sent,
         ),
         errorMessage: errorMessage,
@@ -247,7 +247,7 @@ class Message {
       userId: json['user_id'] as String,
       content: content,
       sender: MessageSender.values.firstWhere(
-        (e) => e.toString().split('.').last == (json['sender'] as String),
+            (e) => e.toString().split('.').last == (json['sender'] as String),
         orElse: () => MessageSender.user,
       ),
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -261,12 +261,12 @@ class Message {
           ?.map((e) => MessageAttachment.fromMap(e as Map<String, dynamic>))
           .toList() ?? [],
       status: MessageStatus.values.firstWhere(
-        (e) => e.toString().split('.').last == (json['status'] as String? ?? 'sent'),
+            (e) => e.toString().split('.').last == (json['status'] as String? ?? 'sent'),
         orElse: () => MessageStatus.sent,
       ),
       errorMessage: errorMessage,
       type: MessageType.values.firstWhere(
-        (e) => e.toString().split('.').last == (json['type'] as String? ?? 'text'),
+            (e) => e.toString().split('.').last == (json['type'] as String? ?? 'text'),
         orElse: () => MessageType.text,
       ),
       metadata: json['metadata'] as Map<String, dynamic>?,

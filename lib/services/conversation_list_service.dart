@@ -80,7 +80,7 @@ class ConversationListService {
       for (final doc in snapshot.docs) {
         try {
           final conversation = Conversation.fromFirestore(doc);
-          
+
           // 마지막 메시지 가져오기
           Message? lastMessage;
           int unreadCount = 0;
@@ -92,7 +92,7 @@ class ConversationListService {
                   .collection('messages')
                   .doc(conversation.lastMessageId!)
                   .get();
-              
+
               if (messageDoc.exists) {
                 lastMessage = Message.fromFirestore(messageDoc);
               }
@@ -125,7 +125,7 @@ class ConversationListService {
                 .where('sender', isEqualTo: 'agent')
                 .where('is_read', isEqualTo: false)
                 .get();
-            
+
             unreadCount = unreadSnapshot.docs.length;
           } catch (e) {
             debugPrint('읽지 않은 메시지 수 계산 실패: $e');
@@ -236,7 +236,7 @@ class ConversationListService {
           .get();
 
       final conversationIds = conversationsSnapshot.docs.map((doc) => doc.id).toList();
-      
+
       if (conversationIds.isNotEmpty) {
         await deleteMultipleConversations(conversationIds);
       }
@@ -301,7 +301,7 @@ class ConversationListService {
                     .collection('messages')
                     .doc(conversation.lastMessageId!)
                     .get();
-                
+
                 if (messageDoc.exists) {
                   lastMessage = Message.fromFirestore(messageDoc);
                 }
@@ -368,7 +368,7 @@ class ConversationListService {
 
       for (final conversationDoc in conversationsSnapshot.docs) {
         final conversationId = conversationDoc.id;
-        
+
         // 해당 대화의 메시지 수
         final messagesSnapshot = await _firestore
             .collection('messages')

@@ -149,7 +149,7 @@ class _SignupPageState extends ConsumerState<SignupPage> { // State -> ConsumerS
     try {
       // Provider를 통해 FirebaseService 접근
       final firebaseService = ref.read(firebaseServiceProvider);
-      
+
       final userModel = await firebaseService.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text,

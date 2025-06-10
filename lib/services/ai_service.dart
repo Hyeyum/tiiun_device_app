@@ -38,11 +38,11 @@ class AiService {
   // String? _apiKey; // Removed, LangchainService handles its own API key
 
   AiService(
-    this._authService,
-    // this._voiceService, // Removed if LangchainService is the sole voice interaction point for AI responses
-    this._conversationService,
-    this._langchainService,
-  );
+      this._authService,
+      // this._voiceService, // Removed if LangchainService is the sole voice interaction point for AI responses
+      this._conversationService,
+      this._langchainService,
+      );
 
   // API 키 설정 - Removed, LangchainService handles its own API key via its constructor now
   // void setApiKey(String apiKey) {

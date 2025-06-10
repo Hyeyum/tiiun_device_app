@@ -7,28 +7,28 @@ import 'package:flutter/foundation.dart';
 class Conversation {
   /// 고유 ID (Document ID)
   final String id;
-  
+
   /// 사용자 ID (Firestore 필수)
   final String userId;
-  
+
   /// 생성 시간 (Firestore 필수)
   final DateTime createdAt;
-  
+
   /// 업데이트 시간 (Firestore 필수)  
   final DateTime updatedAt;
-  
+
   /// 마지막 메시지 ID (Firestore 필수)
   final String? lastMessageId;
-  
+
   /// 메시지 수 (Firestore 필수)
   final int messageCount;
-  
+
   /// 플랜트 ID (Firestore 필수)
   final String? plantId;
-  
+
   /// 대화 요약 (Firestore 필수)
   final String? summary;
-  
+
   // UI 표시용 추가 필드들
   final String? lastMessageContent;
   final String? lastMessageSender;
@@ -52,7 +52,7 @@ class Conversation {
   static String _generateTitle(DateTime createdAt) {
     final now = DateTime.now();
     final diff = now.difference(createdAt);
-    
+
     if (diff.inDays == 0) {
       return '오늘 ${createdAt.hour.toString().padLeft(2, '0')}:${createdAt.minute.toString().padLeft(2, '0')} 대화';
     } else if (diff.inDays == 1) {
@@ -80,7 +80,7 @@ class Conversation {
   factory Conversation.fromFirestore(DocumentSnapshot doc) {
     try {
       final data = doc.data() as Map<String, dynamic>?;
-      
+
       if (data == null) {
         throw Exception('Document data is null');
       }
@@ -88,7 +88,7 @@ class Conversation {
       return Conversation(
         id: doc.id,
         userId: data['user_id'] ?? '',
-        createdAt: data['created_at'] != null 
+        createdAt: data['created_at'] != null
             ? (data['created_at'] as Timestamp).toDate()
             : DateTime.now(),
         updatedAt: data['updated_at'] != null
@@ -188,7 +188,7 @@ class Conversation {
   String get formattedTime {
     final now = DateTime.now();
     final diff = now.difference(updatedAt);
-    
+
     if (diff.inMinutes < 1) {
       return '방금 전';
     } else if (diff.inMinutes < 60) {

@@ -87,9 +87,9 @@ class _SplashPageState extends State<SplashPage> {
                   color: AppColors.main800,
                 ),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // 앱 제목
               Text(
                 'Realtime Chat AI',
@@ -98,9 +98,9 @@ class _SplashPageState extends State<SplashPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // 부제목
               Text(
                 'AI와 실시간 음성 대화',
@@ -108,18 +108,18 @@ class _SplashPageState extends State<SplashPage> {
                   color: Colors.white.withOpacity(0.9),
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               Text(
                 'Firebase Realtime Database 트리거 기반',
                 style: AppTypography.b2.copyWith(
                   color: Colors.white.withOpacity(0.7),
                 ),
               ),
-              
+
               const SizedBox(height: 50),
-              
+
               // 로딩 인디케이터
               const SizedBox(
                 width: 40,
@@ -129,9 +129,9 @@ class _SplashPageState extends State<SplashPage> {
                   strokeWidth: 3,
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               Text(
                 '로딩 중...',
                 style: AppTypography.b2.copyWith(

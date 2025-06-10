@@ -47,11 +47,11 @@ class LangchainService {
   ChatOpenAI? _chatModel;
 
   LangchainService(
-    this._authService,
-    this._voiceService,
-    this._conversationService,
-    this._openAIapiKey, // Receive API key
-  ) {
+      this._authService,
+      this._voiceService,
+      this._conversationService,
+      this._openAIapiKey, // Receive API key
+      ) {
     _initializeLangChain();
   }
 
@@ -100,8 +100,8 @@ class LangchainService {
         try {
           debugPrint('LangchainService: 더미 응답에 대한 TTS 생성 시도');
           final voiceData = await _voiceService.textToSpeechFile(
-            dummyResponse,
-            selectedVoiceId
+              dummyResponse,
+              selectedVoiceId
           );
 
           if (voiceData['url'] == null || (voiceData['url'] as String).isEmpty) {
@@ -149,8 +149,8 @@ class LangchainService {
         // TTS를 사용하여 음성 생성
         debugPrint('LangchainService: 응답 텍스트에 대한 TTS 파일 생성 시도');
         final voiceData = await _voiceService.textToSpeechFile(
-          llmResponseText,
-          selectedVoiceId
+            llmResponseText,
+            selectedVoiceId
         );
 
         if (voiceData['url'] == null || (voiceData['url'] as String).isEmpty) {
@@ -188,25 +188,25 @@ class LangchainService {
   Future<LangchainResponse> _handlePlantPersona(String userMessage, String? voiceId) async {
     try {
       debugPrint('LangchainService: 식물 페르소나 모드 활성화 🌱');
-      
+
       // 1. 사용자 의도 분석
       final intent = PlantPersonaService.analyzeIntent(userMessage);
       debugPrint('LangchainService: 분석된 의도 - $intent');
-      
+
       // 2. 의도별 식물 응답 생성
       final plantResponse = PlantPersonaService.generatePlantResponse(intent);
       debugPrint('LangchainService: 식물 응답 생성 - ${plantResponse.emoji} ${plantResponse.message}');
-      
+
       // 3. 최종 응답 텍스트 구성
       final finalResponse = '${plantResponse.emoji} ${plantResponse.message}';
-      
+
       // 4. TTS 파일 생성
       try {
         final voiceData = await _voiceService.textToSpeechFile(
-          finalResponse,
-          voiceId ?? 'shimmer' // 식물은 부드러운 shimmer 목소리 기본값
+            finalResponse,
+            voiceId ?? 'shimmer' // 식물은 부드러운 shimmer 목소리 기본값
         );
-        
+
         return LangchainResponse(
           text: finalResponse,
           voiceFileUrl: voiceData['url'] as String?,
@@ -242,10 +242,10 @@ class LangchainService {
   }
 
   Future<String> _generateResponseWithLangChain(
-    List<app_models.Message> messageHistory, // app_models.Message로 명시적 사용
-    String userMessage,
-    String? appVoiceIdForPrompt, // App-specific voice ID to tailor system prompt
-  ) async {
+      List<app_models.Message> messageHistory, // app_models.Message로 명시적 사용
+      String userMessage,
+      String? appVoiceIdForPrompt, // App-specific voice ID to tailor system prompt
+      ) async {
     if (_chatModel == null) {
       throw Exception("Chat model is not initialized. Cannot generate response.");
     }
@@ -447,9 +447,9 @@ class LangchainService {
   String _getDummyResponse(String userMessage) {
     // 감정 키워드 분석을 통한 지능형 응답
     final message = userMessage.toLowerCase();
-    
+
     // 긍정적 감정
-    if (message.contains('행복') || message.contains('기쁘') || message.contains('좋아') || 
+    if (message.contains('행복') || message.contains('기쁘') || message.contains('좋아') ||
         message.contains('즐거') || message.contains('감사')) {
       final responses = [
         '그런 긍정적인 감정을 느끼고 계시는군요! 무엇이 이런 기분을 가져다주었는지 더 자세히 들려주실 수 있을까요?',
@@ -458,9 +458,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 슬픔, 우울
-    if (message.contains('슬퍼') || message.contains('우울') || message.contains('힘들') || 
+    if (message.contains('슬퍼') || message.contains('우울') || message.contains('힘들') ||
         message.contains('괴로') || message.contains('외로')) {
       final responses = [
         '지금 마음이 많이 무거우시겠어요. 이런 감정이 드는 것은 자연스러운 일이에요. 혼자가 아니라는 걸 기억해 주세요.',
@@ -469,9 +469,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 분노, 짜증
-    if (message.contains('화가') || message.contains('짜증') || message.contains('분노') || 
+    if (message.contains('화가') || message.contains('짜증') || message.contains('분노') ||
         message.contains('열받') || message.contains('억울')) {
       final responses = [
         '지금 정말 화가 많이 나셨군요. 그런 감정이 생기는 건 충분히 이해할 수 있어요. 어떤 상황이 이런 기분을 만들었나요?',
@@ -480,9 +480,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 불안, 걱정
-    if (message.contains('불안') || message.contains('걱정') || message.contains('두려') || 
+    if (message.contains('불안') || message.contains('걱정') || message.contains('두려') ||
         message.contains('무서') || message.contains('초조')) {
       final responses = [
         '불안한 마음이 많이 크시겠어요. 지금 이 순간, 깊게 한 번 숨을 들이마셔보세요. 어떤 것이 가장 걱정되시나요?',
@@ -491,9 +491,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 스트레스, 압박감
-    if (message.contains('스트레스') || message.contains('압박') || message.contains('부담') || 
+    if (message.contains('스트레스') || message.contains('압박') || message.contains('부담') ||
         message.contains('피곤') || message.contains('지쳐')) {
       final responses = [
         '많은 스트레스를 받고 계시는군요. 이런 상황에서는 잠깐 멈춰서 자신을 돌보는 것이 중요해요. 어떤 일들이 부담되시나요?',
@@ -502,9 +502,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 관계 문제
-    if (message.contains('친구') || message.contains('가족') || message.contains('연인') || 
+    if (message.contains('친구') || message.contains('가족') || message.contains('연인') ||
         message.contains('관계') || message.contains('갈등')) {
       final responses = [
         '인간관계에서 어려움을 겪고 계시는군요. 관계의 문제는 정말 복잡하고 마음 아프죠. 어떤 상황인지 편하게 말씀해주세요.',
@@ -513,9 +513,9 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 일반적인 인사
-    if (message.contains('안녕') || message.contains('반가워') || message.contains('처음') || 
+    if (message.contains('안녕') || message.contains('반가워') || message.contains('처음') ||
         message.contains('시작')) {
       final responses = [
         '안녕하세요! 오늘 만나게 되어 반가워요. 지금 어떤 기분이신지, 무슨 일이 있으셨는지 편하게 이야기해주세요.',
@@ -524,7 +524,7 @@ class LangchainService {
       ];
       return responses[DateTime.now().millisecond % responses.length];
     }
-    
+
     // 기본 응답 (더 다양하고 개인화된)
     final defaultResponses = [
       '말씀해주신 내용을 들으니 많은 생각이 드네요. 지금 느끼시는 감정이나 상황에 대해 더 자세히 이야기해주실 수 있을까요?',
@@ -533,7 +533,7 @@ class LangchainService {
       '지금 하신 말씀이 정말 중요한 것 같아요. 이런 일들이 일상에 어떤 영향을 미치고 있는지 궁금해요.',
       '마음을 열고 이야기해주셔서 고마워요. 이런 상황에서 가장 필요한 것이 무엇일까요?'
     ];
-    
+
     return defaultResponses[DateTime.now().millisecond % defaultResponses.length];
   }
 

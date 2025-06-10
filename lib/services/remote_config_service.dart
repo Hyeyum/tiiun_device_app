@@ -16,7 +16,7 @@ class RemoteConfigService {
         fetchTimeout: const Duration(minutes: 1),
         minimumFetchInterval: const Duration(hours: 1),
       ));
-      
+
       // 🎯 방법 1: 기존 구조 유지 - 트리거 시스템용 기본값 설정
       await _remoteConfig.setDefaults({
         'openai_api_key': '', // OpenAI API 키
@@ -24,17 +24,17 @@ class RemoteConfigService {
         'trigger_value': 'start_conversation',  // 대화 시작 트리거 값
         'reset_value': 'idle',                 // 트리거 후 리셋 값
       });
-      
+
       await _remoteConfig.fetchAndActivate();
       debugPrint('✅ Remote Config initialized and fetched.');
-      
+
       // 설정값 로그 출력
       debugPrint('🔧 Remote Config Values:');
       debugPrint('   - OpenAI API Key: ${getOpenAIApiKey().isNotEmpty ? "설정됨" : "미설정"}');
       debugPrint('   - Trigger Path: ${getTriggerPath()}');
       debugPrint('   - Trigger Value: ${getTriggerValue()}');
       debugPrint('   - Reset Value: ${getResetValue()}');
-      
+
     } catch (e) {
       debugPrint('❌ Error initializing or fetching Remote Config: $e');
     }
