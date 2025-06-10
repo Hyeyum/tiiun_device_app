@@ -6,8 +6,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:tiiun/firebase_options.dart';
 import 'package:tiiun/pages/realtime_chat_page.dart';
 import 'package:tiiun/pages/advanced_voice_chat_page.dart'; // 새로운 고급 음성 대화 페이지 추가
-// 제거됨: motion_waiting_page.dart, motion_waiting_page_simple.dart - 사용하지 않음
-import 'package:tiiun/pages/motion_waiting_page_zflip.dart'; // Z플립 최적화 버전 추가
+// 제거됨: motion_waiting_page.dart, motion_waiting_page_simple.dart, motion_waiting_page_zflip.dart - 사용하지 않음
+import 'package:tiiun/pages/tiiun_waiting_page.dart'; // 새로운 틔운 대기화면
 import 'package:tiiun/pages/foldable_demo_page.dart'; // 폴더블 데모 페이지 추가
 import 'package:tiiun/services/foldable_device_service.dart'; // 폴더블 디바이스 서비스 추가
 import 'package:tiiun/pages/onboarding/login_page.dart';
@@ -15,7 +15,6 @@ import 'package:tiiun/pages/onboarding/signup_page.dart';
 import 'package:tiiun/pages/onboarding/splash_page.dart';
 import 'package:tiiun/pages/settings/voice_settings_page.dart'; // 추가
 import 'package:tiiun/pages/settings/langchain_test_page.dart'; // 추가
-import 'package:tiiun/pages/sensor_monitor_page.dart'; // 센서 모니터링 페이지 추가
 import 'package:tiiun/pages/conversation_list_page.dart'; // 대화 목록 페이지 추가
 import 'package:tiiun/design_system/colors.dart';
 import 'package:tiiun/design_system/typography.dart';
@@ -121,11 +120,12 @@ class RealtimeChatApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: const MotionWaitingPageZFlip(), // Z플립 최적화 버전으로 변경
+      home: const TiiunWaitingPage(), // 새로운 틔운 대기화면으로 변경
       routes: {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        '/motion_waiting_zflip': (context) => const MotionWaitingPageZFlip(), // Z플립 최적화 버전 (현재 사용중)
+
+        '/tiiun_waiting': (context) => const TiiunWaitingPage(), // 새로운 틔운 대기화면
         '/foldable_demo': (context) => const FoldableDemoPage(), // 폴더블 데모 페이지 라우트
         '/home': (context) => const AdvancedVoiceChatPage(), // 고급 음성 대화 페이지로 변경
         '/realtime_chat': (context) => const RealtimeChatPage(),

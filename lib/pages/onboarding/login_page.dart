@@ -296,11 +296,11 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // MotionWaitingPageZFlip으로 이동
+  // TiiunWaitingPage로 이동
   void _navigateToHome() {
     Navigator.pushNamedAndRemoveUntil(
       context,
-      '/motion_waiting_zflip',
+      '/tiiun_waiting',
           (route) => false,
     );
   }

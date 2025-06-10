@@ -134,7 +134,7 @@ class _LangChainTestPageState extends ConsumerState<LangChainTestPage> {
       appBar: AppBar(
         title: Text(
           'LangChain 테스트',
-          style: AppTypography.h1.withColor(Colors.white),
+          style: AppTypography.b2.withColor(Colors.white),
         ),
         backgroundColor: AppColors.main800,
         elevation: 0,
@@ -220,7 +220,7 @@ class _LangChainTestPageState extends ConsumerState<LangChainTestPage> {
                   const SizedBox(height: 8),
                   Text(
                     '고급 감정 분석 • 깊이 있는 상담 • 맞춤형 솔루션 • 🌱 식물 페르소나',
-                    style: AppTypography.b2.withColor(AppColors.grey500),
+                    style: AppTypography.c2.withColor(AppColors.grey500),
                     textAlign: TextAlign.center,
                   ),
                 ],
