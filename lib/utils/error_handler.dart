@@ -34,7 +34,7 @@ enum AppErrorType {
 }
 
 /// 앱 오류 클래스
-/// 
+///
 /// 앱에서 발생하는 다양한 오류를 일관되게 처리하기 위한 클래스입니다.
 class AppError implements Exception {
   /// 오류 타입
@@ -82,7 +82,7 @@ class AppError implements Exception {
 }
 
 /// 오류 처리 유틸리티
-/// 
+///
 /// 앱에서 발생하는 다양한 예외를 처리하는 유틸리티 클래스입니다.
 class ErrorHandler {
   /// 예외 객체를 AppError로 변환

@@ -89,8 +89,8 @@ class SensorMonitoringService {
     try {
       AppLogger.info('SensorMonitoringService: Starting sensor monitoring...');
 
-      // adddelete 경로 모니터링
-      final sensorRef = _database.ref('adddelete');
+      // test 경로 모니터링 (Firebase 구조에 맞춤)
+      final sensorRef = _database.ref('test');
 
       _sensorSubscription = sensorRef.onValue.listen(
             (event) => _handleSensorDataUpdate(event),
@@ -110,44 +110,30 @@ class SensorMonitoringService {
   /// 센서 데이터 업데이트 처리
   void _handleSensorDataUpdate(DatabaseEvent event) {
     try {
-      List<SensorData> sensorDataList = [];
-
       if (event.snapshot.value != null) {
         final data = event.snapshot.value as Map<dynamic, dynamic>;
 
-        // 각 센서 데이터 파싱
-        data.forEach((key, value) {
-          if (value is Map<dynamic, dynamic>) {
-            try {
-              final sensorData = SensorData.fromJson(key.toString(), value);
-              sensorDataList.add(sensorData);
-              AppLogger.debug('SensorMonitoringService: Parsed sensor data: $sensorData');
-            } catch (e) {
-              AppLogger.warning('SensorMonitoringService: Error parsing sensor data for key $key: $e');
-            }
-          }
-        });
+        // test 경로의 단일 센서 데이터 파싱
+        try {
+          final sensorData = SensorData.fromJson('test', data);
 
-        // 시간순으로 정렬 (최신순)
-        sensorDataList.sort((a, b) => b.parsedTimestamp.compareTo(a.parsedTimestamp));
+          AppLogger.info('SensorMonitoringService: Parsed sensor data: $sensorData');
+          AppLogger.info('SensorMonitoringService: Current motion value: ${sensorData.motion}');
 
-        // 최신 데이터 확인
-        final latestData = sensorDataList.isNotEmpty ? sensorDataList.first : null;
+          // motion 값 변화 감지 및 대화 제어
+          _handleMotionChange(sensorData);
 
-        AppLogger.info('SensorMonitoringService: Total sensor data count: ${sensorDataList.length}');
-        if (latestData != null) {
-          AppLogger.info('SensorMonitoringService: Latest motion value: ${latestData.motion}');
+          // 상태 업데이트
+          _updateState(
+            sensorDataList: [sensorData], // 단일 데이터를 리스트로 감싸기
+            latestData: sensorData,
+            status: 'monitoring',
+          );
+
+        } catch (e) {
+          AppLogger.warning('SensorMonitoringService: Error parsing sensor data: $e');
+          _updateState(status: 'parsing_error', error: e.toString());
         }
-
-        // motion 값 변화 감지 및 대화 제어
-        _handleMotionChange(latestData);
-
-        // 상태 업데이트
-        _updateState(
-          sensorDataList: sensorDataList,
-          latestData: latestData,
-          status: 'monitoring',
-        );
 
       } else {
         AppLogger.warning('SensorMonitoringService: No sensor data found');

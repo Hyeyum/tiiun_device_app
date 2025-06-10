@@ -196,8 +196,9 @@ class VoiceAssistantService {
     }
 
     if (_isProcessing) {
-      _transcriptionStreamController?.add('[error]현재 응답을 처리 중입니다');
-      return _transcriptionStreamController!.stream;
+      // 처리 중일 때는 강제로 리셋하고 시작
+      debugPrint('⚠️ VoiceAssistantService: 처리 중 상태에서 음성 인식 시작 - 상태를 리셋합니다');
+      forceResetProcessingState();
     }
 
     _isListening = true;
@@ -398,7 +399,7 @@ class VoiceAssistantService {
     if (_isProcessing) {
       _responseStreamController?.add({
         'status': 'error',
-        'message': '이미 응답 처리 중입니다',
+        'message': '이미 응답 처리 중입니다. 잠시만 기다려주세요.',
       });
       _responseStreamController?.close();
       return _responseStreamController!.stream;
@@ -447,6 +448,20 @@ class VoiceAssistantService {
     });
 
     return _responseStreamController!.stream;
+  }
+
+  // 처리 상태 강제 리셋 (긴급 상황용)
+  void forceResetProcessingState() {
+    debugPrint('⚠️ VoiceAssistantService: 처리 상태를 강제로 리셋합니다');
+    _isProcessing = false;
+    _isListening = false;
+
+    // 스트림 컨트롤러 정리
+    _responseStreamController?.close();
+    _transcriptionStreamController?.close();
+
+    _responseStreamController = null;
+    _transcriptionStreamController = null;
   }
 
   // AI 응답 생성

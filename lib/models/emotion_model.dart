@@ -1,4 +1,3 @@
-
 // lib/models/emotion_model.dart
 
 /// 감정 유형을 정의하는 enum
