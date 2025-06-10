@@ -4,17 +4,17 @@ class AppConstants {
   static const String appName = "마음챙김 대화";
   static const String appVersion = "1.0.0";
   static const String appBuildNumber = "1";
-  
+
   // 권한 관련
-  static const String microphonePermissionRationale = 
+  static const String microphonePermissionRationale =
       "음성 대화 기능을 사용하려면 마이크 권한이 필요합니다.";
-  static const String storagePermissionRationale = 
+  static const String storagePermissionRationale =
       "프로필 이미지와 대화 녹음을 저장하기 위해 저장소 접근 권한이 필요합니다.";
-  static const String cameraPermissionRationale = 
+  static const String cameraPermissionRationale =
       "프로필 이미지를 촬영하기 위해 카메라 권한이 필요합니다.";
-  static const String notificationPermissionRationale = 
+  static const String notificationPermissionRationale =
       "알림을 받기 위해 알림 권한이 필요합니다.";
-  
+
   // 파이어베이스 콜렉션 이름
   static const String usersCollection = "users";
   static const String conversationsCollection = "conversations";
@@ -23,23 +23,23 @@ class AppConstants {
   static const String agentsCollection = "agents";
   static const String voiceProfilesCollection = "voice_profiles";
   static const String notificationsCollection = "notifications";
-  
+
   // 네트워크 타임아웃
   static const int connectTimeout = 30000; // 30초
   static const int receiveTimeout = 30000; // 30초
-  
+
   // 오류 메시지
-  static const String defaultErrorMessage = 
+  static const String defaultErrorMessage =
       "오류가 발생했습니다. 다시 시도해주세요.";
-  static const String networkErrorMessage = 
+  static const String networkErrorMessage =
       "네트워크 연결이 원활하지 않습니다. 연결 상태를 확인해주세요.";
-  static const String authErrorMessage = 
+  static const String authErrorMessage =
       "인증에 실패했습니다. 로그인 정보를 확인해주세요.";
-  static const String permissionDeniedMessage = 
+  static const String permissionDeniedMessage =
       "필요한 권한이 허용되지 않아 해당 기능을 사용할 수 없습니다.";
-  static const String dataNotFoundMessage = 
+  static const String dataNotFoundMessage =
       "요청하신 데이터를 찾을 수 없습니다.";
-  
+
   // 감정 관련
   static const List<String> moodTypes = [
     'very_bad',
@@ -48,7 +48,7 @@ class AppConstants {
     'good',
     'very_good'
   ];
-  
+
   static const Map<String, String> moodLabels = {
     'very_bad': '매우 나쁨',
     'bad': '나쁨',
@@ -56,7 +56,7 @@ class AppConstants {
     'good': '좋음',
     'very_good': '매우 좋음'
   };
-  
+
   // 기본 감정 태그
   static const List<String> defaultMoodTags = [
     // 감정
@@ -68,12 +68,12 @@ class AppConstants {
     // 장소
     '집', '회사', '학교', '카페', '공원', '대중교통', '야외', '실내'
   ];
-  
+
   // 음성 대화 관련
   static const int maxRecordingDuration = 60000; // 60초
   static const int voiceVisualizerSmoothing = 5; // 음성 시각화 평활화 단계
   static const int voiceInputSilenceThreshold = 800; // 음성 입력 종료 감지 임계치(ms)
-  
+
   // AI 에이전트 관련
   static const List<String> defaultAgentPersonalities = [
     '공감적',
@@ -86,12 +86,12 @@ class AppConstants {
     '유머러스',
     '실용적',
   ];
-  
+
   // 애니메이션 지속 시간
   static const int shortAnimationDuration = 150; // 밀리초
   static const int normalAnimationDuration = 300; // 밀리초
   static const int longAnimationDuration = 500; // 밀리초
-  
+
   // 앱 설정 관련
   static const String darkModeKey = 'dark_mode';
   static const String notificationsEnabledKey = 'notifications_enabled';
@@ -100,7 +100,7 @@ class AppConstants {
   static const String autoRecordingKey = 'auto_recording';
   static const String fontSizeKey = 'font_size';
   static const String languageKey = 'language';
-  
+
   // 폰트 크기 옵션
   static const Map<String, double> fontSizeOptions = {
     '작게': 0.8,
@@ -108,7 +108,7 @@ class AppConstants {
     '크게': 1.2,
     '매우 크게': 1.4,
   };
-  
+
   // 언어 옵션
   static const Map<String, String> languageOptions = {
     'ko': '한국어',
@@ -116,16 +116,16 @@ class AppConstants {
     'ja': '日本語',
     'zh': '中文',
   };
-  
+
   // 푸시 알림 채널
   static const String messageNotificationChannelId = 'message_notification_channel';
   static const String messageNotificationChannelName = '메시지 알림';
   static const String messageNotificationChannelDescription = '새로운 메시지가 도착했을 때 알림을 받습니다.';
-  
+
   static const String reminderNotificationChannelId = 'reminder_notification_channel';
   static const String reminderNotificationChannelName = '리마인더 알림';
   static const String reminderNotificationChannelDescription = '감정 기록 및 대화 리마인더 알림을 받습니다.';
-  
+
   // 앱 가이드 텍스트
   static const List<Map<String, String>> onboardingPages = [
     {
@@ -144,11 +144,11 @@ class AppConstants {
       'image': 'assets/images/onboarding_3.png',
     },
   ];
-  
+
   // 프라이버시 정책 및 이용약관 URL
   static const String privacyPolicyUrl = 'https://mindcare.example.com/privacy';
   static const String termsOfServiceUrl = 'https://mindcare.example.com/terms';
-  
+
   // 기타
   static const int maxConversationHistoryCount = 50;
   static const int paginationLimit = 20;
@@ -162,7 +162,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
-  
+
   // 메인 화면
   static const String home = '/home';
   static const String conversationList = '/conversations';
@@ -170,7 +170,7 @@ class AppRoutes {
   static const String moodTracking = '/mood-tracking';
   static const String profile = '/profile';
   static const String settings = '/settings';
-  
+
   // 설정 관련
   static const String voiceSettings = '/settings/voice';
   static const String notificationSettings = '/settings/notifications';
@@ -209,7 +209,7 @@ class ApiConstants {
   // API 엔드포인트
   static const String baseUrl = 'https://mindfultalks-api.example.com/api/v1';
   static const String aiServiceUrl = 'https://mindfultalks-ai.example.com/api/v1';
-  
+
   // API 경로
   static const String authPath = '/auth';
   static const String usersPath = '/users';
@@ -218,17 +218,17 @@ class ApiConstants {
   static const String moodRecordsPath = '/mood-records';
   static const String voiceProfilesPath = '/voice-profiles';
   static const String filesPath = '/files';
-  
+
   // API 헤더
   static const String authHeader = 'Authorization';
   static const String contentTypeHeader = 'Content-Type';
   static const String acceptHeader = 'Accept';
   static const String applicationJson = 'application/json';
-  
+
   // API 타임아웃
   static const int connectionTimeout = 30000; // 30초
   static const int receiveTimeout = 60000; // 60초
-  
+
   // Firebase Storage 경로
   static const String profileImagesPath = 'profile_images';
   static const String voiceRecordingsPath = 'voice_recordings';
@@ -242,23 +242,23 @@ class AnalyticsEvents {
   static const String userLogin = 'user_login';
   static const String userLogout = 'user_logout';
   static const String userProfileUpdate = 'user_profile_update';
-  
+
   // 대화 이벤트
   static const String conversationStart = 'conversation_start';
   static const String conversationEnd = 'conversation_end';
   static const String messageSent = 'message_sent';
   static const String messageReceived = 'message_received';
   static const String voiceMessageSent = 'voice_message_sent';
-  
+
   // 감정 관련 이벤트
   static const String moodRecorded = 'mood_recorded';
   static const String moodDataViewed = 'mood_data_viewed';
-  
+
   // 기능 사용 이벤트
   static const String featureUsed = 'feature_used';
   static const String settingsChanged = 'settings_changed';
   static const String onboardingCompleted = 'onboarding_completed';
-  
+
   // 오류 이벤트
   static const String errorOccurred = 'error_occurred';
 }
@@ -268,13 +268,13 @@ class NotificationConstants {
   // 알림 ID 범위
   static const int messageNotificationIdStart = 1000;
   static const int reminderNotificationIdStart = 2000;
-  
+
   // 알림 유형
   static const String messageType = 'message';
   static const String moodReminderType = 'mood_reminder';
   static const String conversationReminderType = 'conversation_reminder';
   static const String tipsType = 'tips';
-  
+
   // 알림 시간
   static const int defaultMoodReminderHour = 20; // 저녁 8시
   static const int defaultMoodReminderMinute = 0;

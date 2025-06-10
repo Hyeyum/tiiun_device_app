@@ -3,59 +3,59 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
   // ========== FireStore 스키마 필수 필드들 ==========
-  
+
   /// 사용자명 (FireStore 필수)
   final String userName;
-  
+
   /// 생성 시간 (FireStore 필수)
   final DateTime createdAt;
-  
+
   /// 선호 음성 (FireStore 필수)
   final String preferredVoice;
-  
+
   /// 알림 설정 (FireStore 필수)
   final bool notificationYn;
-  
+
   /// 성별 (FireStore 필수)
   final String? gender;
-  
+
   /// 언어 설정 (FireStore 필수)
   final String language;
-  
+
   /// 선호 활동 (FireStore 필수)
   final List<String> preferredActivities;
-  
+
   /// 프로필 이미지 URL (FireStore 필수)
   final String? profileImageUrl;
-  
+
   /// Whisper API 사용 여부 (FireStore 필수)
   final bool useWhisperApiYn;
-  
+
   /// 테마 모드 (FireStore 필수)
   final String themeMode;
-  
+
   /// 자동 대화 저장 여부 (FireStore 필수)
   final bool autoSaveConversationsYn;
-  
+
   /// 연령대 (FireStore 필수)
   final String? ageGroup;
-  
+
   // ========== 추가 기능 필드들 (FireStore 스키마에는 없지만 앱 기능상 필요) ==========
-  
+
   /// Firebase Auth UID (인증 연동용)
   final String uid;
-  
+
   /// Firebase Auth 이메일 (인증 연동용)
   final String email;
-  
+
   // ========== 추가 알림 설정 필드들 (FireStore 스키마에 없음 - 제거 검토 필요) ==========
-  
+
   /// 이메일 알림 (스키마에 없음)
   final bool emailNotifications;
-  
+
   /// 매일 체크인 리마인더 (스키마에 없음)
   final bool dailyCheckInReminder;
-  
+
   /// 주간 요약 기능 (스키마에 없음)
   final bool weeklySummaryEnabled;
 
@@ -96,7 +96,7 @@ class UserModel {
       themeMode: data['theme_mode'] ?? 'light', // theme_mode (스키마 반영)
       autoSaveConversationsYn: data['auto_save_conversations_yn'] ?? true, // auto_save_conversations_yn (스키마 반영)
       ageGroup: data['age_group'], // age_group (스키마 반영)
-      
+
       // 새로 추가된 알림 설정 필드들을 Firestore에서 읽어옴 (스키마에 없지만 유지)
       emailNotifications: data['emailNotifications'] ?? true,
       dailyCheckInReminder: data['dailyCheckInReminder'] ?? false,
@@ -156,7 +156,7 @@ class UserModel {
     DateTime? createdAt,
     String? preferredVoice,
     bool? notificationYn,
-        String? gender,
+    String? gender,
     String? language,
     List<String>? preferredActivities,
     String? profileImageUrl,

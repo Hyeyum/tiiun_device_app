@@ -15,24 +15,24 @@ enum UserIntent {
   changeDesire,    // 자기관리/변화 욕구
   communionDesire, // 소통·관계 욕구
   selfDown,        // 자존감/효능감 문제
-  
+
   // Action 1 전용
   socialIso,       // 사회적 고립감
   findMeaning,     // 의미 있는 활동 탐색
   workAdapt,       // 직장문화 부적응
-  
+
   // Action 2 전용
   findMeaningLife, // 삶의 의미 탐색
   infoLackAnx,     // 정보 부족 & 미래 불안
   identityStruggle,// 사회초년생 혼란
   pressureBurnout, // 성과 압박 & 번아웃
   rewardDissatisfied, // 보상 불만
-  
+
   // Action 3 전용
   eatStress,       // 먹방 악순환
   dietStress,      // 체중 & 다이어트 스트레스
   focusLoss,       // 업무 집중도 저하
-  
+
   // 기타
   unknown,         // 알 수 없는 의도
 }
@@ -57,12 +57,12 @@ class PlantPersonaService {
   /// 사용자 메시지에서 의도를 분석
   static UserIntent analyzeIntent(String userMessage) {
     final message = userMessage.toLowerCase().trim();
-    
+
     // 인사 패턴
     if (_containsAny(message, ['안녕', '안뇽', '하이', 'hi', 'hello', '처음', '반가워'])) {
       return UserIntent.greet;
     }
-    
+
     // 대화 시작/종료
     if (_containsAny(message, ['이야기하고 싶어', '대화하자', '얘기해줄게', '들어줘'])) {
       return UserIntent.startChat;
@@ -70,12 +70,12 @@ class PlantPersonaService {
     if (_containsAny(message, ['가야겠어', '끝낼게', '나갈게', '바이', 'bye', '또 만나'])) {
       return UserIntent.endChat;
     }
-    
+
     // 감정 표현
     if (_containsAny(message, ['기분이', '감정이', '느낌이', '마음이', '속이'])) {
       return UserIntent.emotionExp;
     }
-    
+
     // 스트레스 관련
     if (_containsAny(message, ['스트레스', '압박', '부담', '힘들어', '지쳐', '피곤', '답답'])) {
       if (_containsAny(message, ['먹', '음식', '폭식', '다이어트'])) {
@@ -83,47 +83,47 @@ class PlantPersonaService {
       }
       return UserIntent.stressTalk;
     }
-    
+
     // 다이어트/체중 스트레스
     if (_containsAny(message, ['다이어트', '살빼기', '체중', '몸무게', '뚱뚱', '살쪘', '먹방'])) {
       return UserIntent.dietStress;
     }
-    
+
     // 감정 해소 어려움
     if (_containsAny(message, ['어떻게 해야', '모르겠어', '해결이 안', '나아지지 않아'])) {
       return UserIntent.emoDifficult;
     }
-    
+
     // 조언 요청
     if (_containsAny(message, ['어떻게 생각해', '조언', '도움', '방법이 뭐야', '어떻게 하면'])) {
       return UserIntent.adviceReq;
     }
-    
+
     // 정보 요청
     if (_containsAny(message, ['알려줘', '궁금해', '정보', '방법', '어떻게', '뭐야'])) {
       return UserIntent.infoReq;
     }
-    
+
     // 변화 욕구
     if (_containsAny(message, ['바뀌고 싶어', '변화', '성장', '발전', '나아지고', '개선'])) {
       return UserIntent.changeDesire;
     }
-    
+
     // 소통/관계 욕구
     if (_containsAny(message, ['외로워', '혼자', '친구', '관계', '소통', '이야기하고 싶어'])) {
       return UserIntent.socialIso;
     }
-    
+
     // 자존감 문제
     if (_containsAny(message, ['자신감', '자존감', '못나', '바보', '실패', '잘못', '후회'])) {
       return UserIntent.selfDown;
     }
-    
+
     // 의미 탐색
     if (_containsAny(message, ['의미', '목적', '이유', '왜 살아', '가치', '보람'])) {
       return UserIntent.findMeaningLife;
     }
-    
+
     // 직장/업무 관련
     if (_containsAny(message, ['직장', '회사', '업무', '일', '상사', '동료', '적응'])) {
       if (_containsAny(message, ['적응', '문화', '어려워', '힘들어'])) {
@@ -139,17 +139,17 @@ class PlantPersonaService {
         return UserIntent.rewardDissatisfied;
       }
     }
-    
+
     // 미래 불안
     if (_containsAny(message, ['불안', '걱정', '두려워', '미래', '모르겠어', '막막'])) {
       return UserIntent.infoLackAnx;
     }
-    
+
     // 정체성 혼란
     if (_containsAny(message, ['정체성', '내가 누구', '혼란', '갈피', '방향'])) {
       return UserIntent.identityStruggle;
     }
-    
+
     return UserIntent.unknown;
   }
 
@@ -169,7 +169,7 @@ class PlantPersonaService {
             strategy: '생동감 있는 반응으로 친밀감 형성',
           ),
         ]);
-        
+
       case UserIntent.startChat:
         return _randomResponse([
           PlantResponse(
@@ -183,7 +183,7 @@ class PlantPersonaService {
             strategy: '깊은 공감과 여유로운 분위기 조성',
           ),
         ]);
-        
+
       case UserIntent.endChat:
         return _randomResponse([
           PlantResponse(
@@ -197,7 +197,7 @@ class PlantPersonaService {
             strategy: '따뜻한 작별과 지속적 동행 의지',
           ),
         ]);
-        
+
       case UserIntent.emotionExp:
         return _randomResponse([
           PlantResponse(
@@ -211,7 +211,7 @@ class PlantPersonaService {
             strategy: '자연 비유를 통한 희망적 전망',
           ),
         ]);
-        
+
       case UserIntent.stressTalk:
         return _randomResponse([
           PlantResponse(
@@ -225,7 +225,7 @@ class PlantPersonaService {
             strategy: '자연의 지혜를 통한 대처법 제시',
           ),
         ]);
-        
+
       case UserIntent.emoDifficult:
         return _randomResponse([
           PlantResponse(
@@ -239,7 +239,7 @@ class PlantPersonaService {
             strategy: '계절 순환을 통한 희망 메시지',
           ),
         ]);
-        
+
       case UserIntent.adviceReq:
         return _randomResponse([
           PlantResponse(
@@ -253,7 +253,7 @@ class PlantPersonaService {
             strategy: '안정성과 점진적 성장 조언',
           ),
         ]);
-        
+
       case UserIntent.infoReq:
         return _randomResponse([
           PlantResponse(
@@ -267,7 +267,7 @@ class PlantPersonaService {
             strategy: '학습 과정의 자연스러움 강조',
           ),
         ]);
-        
+
       case UserIntent.changeDesire:
         return _randomResponse([
           PlantResponse(
@@ -281,7 +281,7 @@ class PlantPersonaService {
             strategy: '변화의 시작점 인정과 격려',
           ),
         ]);
-        
+
       case UserIntent.communionDesire:
         return _randomResponse([
           PlantResponse(
@@ -295,7 +295,7 @@ class PlantPersonaService {
             strategy: '보이지 않는 연결과 동행 강조',
           ),
         ]);
-        
+
       case UserIntent.selfDown:
         return _randomResponse([
           PlantResponse(
@@ -309,7 +309,7 @@ class PlantPersonaService {
             strategy: '잠재력과 미래 가능성 강조',
           ),
         ]);
-        
+
       case UserIntent.socialIso:
         return _randomResponse([
           PlantResponse(
@@ -323,7 +323,7 @@ class PlantPersonaService {
             strategy: '자연스러운 연결의 가능성 제시',
           ),
         ]);
-        
+
       case UserIntent.findMeaning:
         return _randomResponse([
           PlantResponse(
@@ -332,7 +332,7 @@ class PlantPersonaService {
             strategy: '의미 있는 활동 탐색 격려',
           ),
         ]);
-        
+
       case UserIntent.workAdapt:
         return _randomResponse([
           PlantResponse(
@@ -341,7 +341,7 @@ class PlantPersonaService {
             strategy: '적응 과정의 자연스러움과 회복력 강조',
           ),
         ]);
-        
+
       case UserIntent.findMeaningLife:
         return _randomResponse([
           PlantResponse(
@@ -350,7 +350,7 @@ class PlantPersonaService {
             strategy: '삶의 의미는 과정에서 발견됨을 강조',
           ),
         ]);
-        
+
       case UserIntent.infoLackAnx:
         return _randomResponse([
           PlantResponse(
@@ -359,7 +359,7 @@ class PlantPersonaService {
             strategy: '불확실성 속에서도 희망 유지',
           ),
         ]);
-        
+
       case UserIntent.identityStruggle:
         return _randomResponse([
           PlantResponse(
@@ -368,7 +368,7 @@ class PlantPersonaService {
             strategy: '정체성 혼란을 성장 과정으로 재정의',
           ),
         ]);
-        
+
       case UserIntent.pressureBurnout:
         return _randomResponse([
           PlantResponse(
@@ -377,7 +377,7 @@ class PlantPersonaService {
             strategy: '속도보다 지속성의 가치 강조',
           ),
         ]);
-        
+
       case UserIntent.rewardDissatisfied:
         return _randomResponse([
           PlantResponse(
@@ -386,7 +386,7 @@ class PlantPersonaService {
             strategy: '보이지 않는 성장과 보상의 의미 재해석',
           ),
         ]);
-        
+
       case UserIntent.eatStress:
         return _randomResponse([
           PlantResponse(
@@ -395,7 +395,7 @@ class PlantPersonaService {
             strategy: '절제와 자기 돌봄의 중요성',
           ),
         ]);
-        
+
       case UserIntent.dietStress:
         return _randomResponse([
           PlantResponse(
@@ -404,7 +404,7 @@ class PlantPersonaService {
             strategy: '변화의 자연스러운 과정으로 수용',
           ),
         ]);
-        
+
       case UserIntent.focusLoss:
         return _randomResponse([
           PlantResponse(
@@ -413,7 +413,7 @@ class PlantPersonaService {
             strategy: '집중력 회복을 위한 방향성 재설정',
           ),
         ]);
-        
+
       case UserIntent.unknown:
       default:
         return _randomResponse([

@@ -85,14 +85,14 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
 
   Future<void> _testVoice(String voiceId) async {
     if (_isPlaying) return;
-    
+
     setState(() {
       _isPlaying = true;
     });
 
     try {
       final voiceService = ref.read(voiceServiceProvider);
-      
+
       // 식물 페르소나는 특별한 테스트 메시지
       String testMessage;
       if (voiceId == 'plant') {
@@ -100,7 +100,7 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
       } else {
         testMessage = '안녕하세요! 이 목소리가 마음에 드시나요?';
       }
-      
+
       await voiceService.speak(testMessage, voiceId: voiceId);
     } catch (e) {
       if (mounted) {
@@ -185,17 +185,17 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: isSelected 
+                          color: isSelected
                               ? (voice.type == VoiceType.special ? Colors.green.shade500 : AppColors.main500)
                               : (voice.type == VoiceType.special ? Colors.green.shade200 : AppColors.grey200),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Icon(
-                          voice.type == VoiceType.special 
+                          voice.type == VoiceType.special
                               ? Icons.eco // 식물 아이콘
                               : Icons.record_voice_over,
-                          color: isSelected 
-                              ? Colors.white 
+                          color: isSelected
+                              ? Colors.white
                               : (voice.type == VoiceType.special ? Colors.green.shade700 : AppColors.grey600),
                           size: 24,
                         ),
@@ -218,25 +218,25 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                           Container(
                             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: voice.type == VoiceType.openai 
-                                  ? AppColors.main100 
+                              color: voice.type == VoiceType.openai
+                                  ? AppColors.main100
                                   : voice.type == VoiceType.special
-                                      ? Colors.green.shade100
-                                      : AppColors.grey100,
+                                  ? Colors.green.shade100
+                                  : AppColors.grey100,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              voice.type == VoiceType.openai 
-                                  ? 'OpenAI' 
+                              voice.type == VoiceType.openai
+                                  ? 'OpenAI'
                                   : voice.type == VoiceType.special
-                                      ? '🌱 특별 AI'
-                                      : 'Device',
+                                  ? '🌱 특별 AI'
+                                  : 'Device',
                               style: AppTypography.b3.withColor(
-                                voice.type == VoiceType.openai 
-                                    ? AppColors.main700 
+                                voice.type == VoiceType.openai
+                                    ? AppColors.main700
                                     : voice.type == VoiceType.special
-                                        ? Colors.green.shade700
-                                        : AppColors.grey700,
+                                    ? Colors.green.shade700
+                                    : AppColors.grey700,
                               ),
                             ),
                           ),
@@ -248,22 +248,22 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                           // 테스트 버튼
                           IconButton(
                             onPressed: _isPlaying ? null : () => _testVoice(voice.id),
-                            icon: _isPlaying 
+                            icon: _isPlaying
                                 ? SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        AppColors.main500,
-                                      ),
-                                    ),
-                                  )
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.main500,
+                                ),
+                              ),
+                            )
                                 : Icon(
-                                    Icons.play_arrow,
-                                    color: AppColors.main500,
-                                    size: 28,
-                                  ),
+                              Icons.play_arrow,
+                              color: AppColors.main500,
+                              size: 28,
+                            ),
                           ),
                           // 선택 라디오
                           Radio<String>(

@@ -28,9 +28,9 @@ final voiceAssistantServiceProvider = Provider<VoiceAssistantService>((ref) {
     final conversationMemoryService = ref.watch(conversationMemoryServiceProvider);
     final voiceService = ref.watch(voiceServiceProvider);
     final remoteConfigService = ref.watch(remoteConfigServiceProvider); // Remote Config 추가
-    
+
     final service = VoiceAssistantService(langchainService, conversationMemoryService, voiceService);
-    
+
     // API 키 자동 설정
     final apiKey = remoteConfigService.getOpenAIApiKey();
     if (apiKey.isNotEmpty) {
@@ -39,7 +39,7 @@ final voiceAssistantServiceProvider = Provider<VoiceAssistantService>((ref) {
     } else {
       debugPrint('VoiceAssistantService: API 키가 비어있습니다. Remote Config를 확인해주세요.');
     }
-    
+
     return service;
   } catch (e) {
     // 서비스 초기화 실패 시 빈 서비스 반환
@@ -56,54 +56,54 @@ class VoiceAssistantService {
   factory VoiceAssistantService.empty() {
     return VoiceAssistantService._empty();
   }
-  
-  VoiceAssistantService._empty() : 
-    _langchainService = null, 
-    _memoryService = null,
-    _voiceService = null;
+
+  VoiceAssistantService._empty() :
+        _langchainService = null,
+        _memoryService = null,
+        _voiceService = null;
 
   // 일반 생성자
   VoiceAssistantService(
-    this._langchainService, 
-    this._memoryService,
-    this._voiceService,
-  );
-  
+      this._langchainService,
+      this._memoryService,
+      this._voiceService,
+      );
+
   final LangchainService? _langchainService;
   final ConversationMemoryService? _memoryService;
   final VoiceService? _voiceService;
-  
+
   bool _isListening = false;
   bool _isProcessing = false;
-  
+
   // 음성 인식 관련 변수
   final SimpleSpeechRecognizer _speechRecognizer = SimpleSpeechRecognizer();
   WhisperService? _whisperService;
   SpeechRecognitionMode _recognitionMode = SpeechRecognitionMode.whisper; // 기본값 Whisper
-  
+
   // Text to Speech
   final FlutterTts _flutterTts = FlutterTts();
-  
+
   // LLM Chain
   String? _apiKey;
   ConversationChain? _conversationChain;
   final Uuid _uuid = const Uuid();
-  
+
   // 상태
   String _currentConversationId = '';
   StreamController<String>? _transcriptionStreamController;
   StreamController<Map<String, dynamic>>? _responseStreamController;
   StreamSubscription? _recognizerSubscription;
   StreamSubscription? _whisperStreamSubscription;
-  
+
   // 연결 확인
   final Connectivity _connectivity = Connectivity();
-  
+
   // API 키 설정
   void setApiKey(String apiKey) async {
     _apiKey = apiKey;
     _initConversationChain();
-    
+
     // API 키가 있을 때만 Whisper 서비스 초기화
     if (apiKey.isNotEmpty) {
       try {
@@ -119,43 +119,43 @@ class VoiceAssistantService {
       _whisperService = null;
       _recognitionMode = SpeechRecognitionMode.native;
     }
-    
+
     // 설정 복원
     await _loadSettings();
   }
-  
+
   // 설정 로드
   Future<void> _loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final useWhisper = prefs.getBool('use_whisper_api') ?? true;
-      _recognitionMode = useWhisper 
-          ? SpeechRecognitionMode.whisper 
+      _recognitionMode = useWhisper
+          ? SpeechRecognitionMode.whisper
           : SpeechRecognitionMode.native;
     } catch (e) {
       debugPrint('설정 로드 실패: $e');
     }
   }
-  
+
   // 설정 저장
   Future<void> _saveSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(
-        'use_whisper_api', 
-        _recognitionMode == SpeechRecognitionMode.whisper
+          'use_whisper_api',
+          _recognitionMode == SpeechRecognitionMode.whisper
       );
     } catch (e) {
       debugPrint('설정 저장 실패: $e');
     }
   }
-  
+
   // 기기 설정 초기화
   Future<void> initSpeech() async {
     try {
       // 음성 인식 초기화 (backup으로 유지)
       await _speechRecognizer.initialize();
-      
+
       // TTS 설정 초기화
       await _flutterTts.setLanguage('ko-KR');
       await _flutterTts.setSpeechRate(0.5);
@@ -165,43 +165,43 @@ class VoiceAssistantService {
       print('음성 초기화 실패: $e');
     }
   }
-  
+
   // 음성 인식 모드 설정
   Future<void> setRecognitionMode(SpeechRecognitionMode mode) async {
     _recognitionMode = mode;
     await _saveSettings();
   }
-  
+
   // OpenAI Whisper 사용 여부 설정
   void setUseWhisper(bool useWhisper) {
-    _recognitionMode = useWhisper 
-        ? SpeechRecognitionMode.whisper 
+    _recognitionMode = useWhisper
+        ? SpeechRecognitionMode.whisper
         : SpeechRecognitionMode.native;
     _saveSettings();
   }
-  
+
   // 인터넷 연결 확인
   Future<bool> _checkInternetConnection() async {
     var connectivityResult = await _connectivity.checkConnectivity();
     return connectivityResult != ConnectivityResult.none;
   }
-  
+
   // 음성 인식 시작
   Stream<String> startListening() {
     _transcriptionStreamController = StreamController<String>();
-    
+
     if (_isListening) {
       _transcriptionStreamController?.add('[error]이미 음성 인식 중입니다');
       return _transcriptionStreamController!.stream;
     }
-    
+
     if (_isProcessing) {
       _transcriptionStreamController?.add('[error]현재 응답을 처리 중입니다');
       return _transcriptionStreamController!.stream;
     }
-    
+
     _isListening = true;
-    
+
     try {
       // API 키가 없거나 Whisper 서비스가 초기화되지 않은 경우 자동으로 기기 내장 모드로 전환
       if (_recognitionMode == SpeechRecognitionMode.whisper && (_whisperService == null || _apiKey == null || _apiKey!.isEmpty)) {
@@ -209,14 +209,14 @@ class VoiceAssistantService {
         _recognitionMode = SpeechRecognitionMode.native;
         _transcriptionStreamController?.add('[error]Whisper 서비스를 사용할 수 없어 기기 내장 음성 인식으로 전환합니다.');
       }
-      
+
       // 현재 설정된 음성 인식 모드에 따라 다른 인식 시작
       if (_recognitionMode == SpeechRecognitionMode.whisper) {
         _startWhisperRecognition();
       } else {
         _startNativeSpeechRecognition();
       }
-      
+
       return _transcriptionStreamController!.stream;
     } catch (e) {
       _isListening = false;
@@ -224,108 +224,108 @@ class VoiceAssistantService {
       return _transcriptionStreamController!.stream;
     }
   }
-  
+
   // Whisper를 사용한 음성 인식 시작
   Future<void> _startWhisperRecognition() async {
     if (_whisperService == null) {
       _transcriptionStreamController?.add('[error]Whisper 서비스가 초기화되지 않았습니다. API 키를 확인해주세요.');
       _isListening = false;
-      
+
       // 자동으로 기기 내장 음성 인식으로 전환
       debugPrint('Whisper 초기화 실패 - 기기 내장 음성 인식으로 전환');
       _recognitionMode = SpeechRecognitionMode.native;
       _startNativeSpeechRecognition();
       return;
     }
-    
+
     // 인터넷 연결 확인
     if (!await _checkInternetConnection()) {
       _transcriptionStreamController?.add('[error]인터넷 연결이 필요합니다. 기기 내장 음성 인식으로 전환합니다.');
       _isListening = false;
-      
+
       // 자동으로 기기 내장 음성 인식으로 전환
       _recognitionMode = SpeechRecognitionMode.native;
       _startNativeSpeechRecognition();
       return;
     }
-    
+
     try {
       debugPrint("OpenAI Whisper를 사용한 음성 인식 시작");
-      
+
       // 녹음 및 변환 스트림 시작
       final whisperStream = _whisperService!.streamRecordAndTranscribe(
-        recordingDuration: 10, // 10초간 녹음
-        language: 'ko'         // 한국어
+          recordingDuration: 10, // 10초간 녹음
+          language: 'ko'         // 한국어
       );
-      
+
       // 스트림 구독
       _whisperStreamSubscription = whisperStream.listen(
-        (result) {
-          if (result.startsWith('[error]')) {
-            // 오류 처리
-            debugPrint("Whisper 인식 오류: ${result.substring(7)}");
-            _transcriptionStreamController?.add(result);
-            
-            // 오류 발생 시 기기 내장 인식으로 자동 전환
-            if (result.contains('인터넷 연결') || result.contains('API 오류') || result.contains('401') || result.contains('403')) {
-              debugPrint('Whisper 오류 발생 - 기기 내장 음성 인식으로 전환');
-              _recognitionMode = SpeechRecognitionMode.native;
+              (result) {
+            if (result.startsWith('[error]')) {
+              // 오류 처리
+              debugPrint("Whisper 인식 오류: ${result.substring(7)}");
+              _transcriptionStreamController?.add(result);
+
+              // 오류 발생 시 기기 내장 인식으로 자동 전환
+              if (result.contains('인터넷 연결') || result.contains('API 오류') || result.contains('401') || result.contains('403')) {
+                debugPrint('Whisper 오류 발생 - 기기 내장 음성 인식으로 전환');
+                _recognitionMode = SpeechRecognitionMode.native;
+              }
+            } else if (result.startsWith('[listening_stopped]')) {
+              // 인식 종료 처리
+              if (_isListening) {
+                _isListening = false;
+                _transcriptionStreamController?.add('[listening_stopped]');
+              }
+            } else if (result.startsWith('[interim]')) {
+              // 중간 결과는 그대로 전달
+              _transcriptionStreamController?.add(result);
+            } else {
+              // 최종 결과 전달 및 인식 종료
+              _transcriptionStreamController?.add(result);
+              _isListening = false;
+              _transcriptionStreamController?.add('[listening_stopped]');
             }
-          } else if (result.startsWith('[listening_stopped]')) {
-            // 인식 종료 처리
+          },
+          onError: (error) {
+            debugPrint("Whisper 음성 인식 스트림 오류: $error");
+            _transcriptionStreamController?.add('[error]음성 인식 중 오류가 발생했습니다. 기기 내장 음성 인식으로 전환합니다.');
+
+            // 오류 발생 시 기기 내장 인식으로 자동 전환
+            debugPrint('Whisper 스트림 오류 - 기기 내장 음성 인식으로 전환');
+            _recognitionMode = SpeechRecognitionMode.native;
+            _isListening = false;
+            _transcriptionStreamController?.add('[listening_stopped]');
+          },
+          onDone: () {
             if (_isListening) {
               _isListening = false;
               _transcriptionStreamController?.add('[listening_stopped]');
             }
-          } else if (result.startsWith('[interim]')) {
-            // 중간 결과는 그대로 전달
-            _transcriptionStreamController?.add(result);
-          } else {
-            // 최종 결과 전달 및 인식 종료
-            _transcriptionStreamController?.add(result);
-            _isListening = false;
-            _transcriptionStreamController?.add('[listening_stopped]');
           }
-        },
-        onError: (error) {
-          debugPrint("Whisper 음성 인식 스트림 오류: $error");
-          _transcriptionStreamController?.add('[error]음성 인식 중 오류가 발생했습니다. 기기 내장 음성 인식으로 전환합니다.');
-          
-          // 오류 발생 시 기기 내장 인식으로 자동 전환
-          debugPrint('Whisper 스트림 오류 - 기기 내장 음성 인식으로 전환');
-          _recognitionMode = SpeechRecognitionMode.native;
-          _isListening = false;
-          _transcriptionStreamController?.add('[listening_stopped]');
-        },
-        onDone: () {
-          if (_isListening) {
-            _isListening = false;
-            _transcriptionStreamController?.add('[listening_stopped]');
-          }
-        }
       );
     } catch (e) {
       debugPrint("Whisper 인식 시작 오류: $e");
       _transcriptionStreamController?.add('[error]Whisper 음성 인식 시작 실패. 기기 내장 음성 인식으로 전환합니다.');
-      
+
       // 예외 발생 시 기기 내장 인식으로 자동 전환
       debugPrint('Whisper 시작 예외 - 기기 내장 음성 인식으로 전환');
       _recognitionMode = SpeechRecognitionMode.native;
       _isListening = false;
     }
   }
-  
+
   // 기기 내장 음성 인식 시작
   void _startNativeSpeechRecognition() {
     try {
       debugPrint("기기 내장 음성 인식 시작");
-      
+
       // 음성 인식기 시작
       _speechRecognizer.startListening();
-      
+
       // 음성 인식 결과를 구독
       _recognizerSubscription = _speechRecognizer.transcriptionStream.listen(
-        (result) {
+            (result) {
           if (result.startsWith('[error]')) {
             // 오류 처리
             debugPrint("기기 내장 음성 인식 오류: ${result.substring(7)}");
@@ -358,43 +358,43 @@ class VoiceAssistantService {
       _isListening = false;
     }
   }
-  
+
   // 음성 인식 중지
   Future<void> stopListening() async {
     if (!_isListening) {
       return;
     }
-    
+
     _isListening = false;
-    
+
     try {
       // Whisper 사용 중이었다면 관련 리소스 정리
       await _whisperStreamSubscription?.cancel();
-      
+
       // 기기 내장 음성 인식 중지
       await _speechRecognizer.stopListening();
       await _recognizerSubscription?.cancel();
-      
+
       _transcriptionStreamController?.add('[listening_stopped]');
     } catch (e) {
       debugPrint('음성 인식 중지 오류: $e');
     }
   }
-  
+
   // 대화 시작 또는 계속 - Future<void>로 변경
   Future<void> startConversation(String conversationId) async {
     _currentConversationId = conversationId.isNotEmpty
         ? conversationId
         : _uuid.v4();
   }
-  
+
   // 음성 응답 처리
   Stream<Map<String, dynamic>> processVoiceInput(
-    String text,
-    String voiceId,
-  ) {
+      String text,
+      String voiceId,
+      ) {
     _responseStreamController = StreamController<Map<String, dynamic>>();
-    
+
     if (_isProcessing) {
       _responseStreamController?.add({
         'status': 'error',
@@ -403,7 +403,7 @@ class VoiceAssistantService {
       _responseStreamController?.close();
       return _responseStreamController!.stream;
     }
-    
+
     if (_langchainService == null) {
       _responseStreamController?.add({
         'status': 'error',
@@ -412,7 +412,7 @@ class VoiceAssistantService {
       _responseStreamController?.close();
       return _responseStreamController!.stream;
     }
-    
+
     if (text.isEmpty) {
       _responseStreamController?.add({
         'status': 'error',
@@ -421,15 +421,15 @@ class VoiceAssistantService {
       _responseStreamController?.close();
       return _responseStreamController!.stream;
     }
-    
+
     _isProcessing = true;
-    
+
     // 응답 생성 프로세스 시작
     _responseStreamController?.add({
       'status': 'processing',
       'message': '응답을 생성하는 중...',
     });
-    
+
     _getAIResponse(text, voiceId).then((response) {
       _isProcessing = false;
       _responseStreamController?.add({
@@ -445,32 +445,32 @@ class VoiceAssistantService {
       });
       _responseStreamController?.close();
     });
-    
+
     return _responseStreamController!.stream;
   }
-  
+
   // AI 응답 생성
   Future<Map<String, dynamic>> _getAIResponse(
-    String userMessage,
-    String voiceId,
-  ) async {
+      String userMessage,
+      String voiceId,
+      ) async {
     try {
       if (_langchainService == null) {
         throw Exception('서비스가 초기화되지 않았습니다');
       }
-      
+
       // LangChain 서비스를 통해 응답 생성
       final response = await _langchainService!.getResponse(
         conversationId: _currentConversationId,
         userMessage: userMessage,
       );
-      
+
       // 텍스트 응답
       final textResponse = response.text;
-      
+
       // TTS를 통한 음성 응답 생성
       final audioFilePath = await _generateTtsAudio(textResponse, voiceId);
-      
+
       return {
         'text': textResponse,
         'audioPath': audioFilePath,
@@ -480,7 +480,7 @@ class VoiceAssistantService {
       throw Exception('응답 생성 중 오류: $e');
     }
   }
-  
+
   // TTS를 통한 음성 파일 생성
   Future<String> _generateTtsAudio(String text, String voiceId) async {
     try {
@@ -501,7 +501,7 @@ class VoiceAssistantService {
           debugPrint('VoiceAssistant: VoiceService TTS 오류, 내부 TTS로 대체: $e');
         }
       }
-      
+
       // VoiceService가 null이거나 오류 발생 시 내부 TTS 사용
       debugPrint('VoiceAssistant: 내부 TTS 사용');
       // 음성 설정
@@ -522,22 +522,22 @@ class VoiceAssistantService {
           case 'onyx':
           case 'nova':
           case 'shimmer':
-            // OpenAI 음성 ID가 전달된 경우 기본 음성 사용
+          // OpenAI 음성 ID가 전달된 경우 기본 음성 사용
             await _flutterTts.setVoice({'name': 'ko-kr-x-ism-local', 'locale': 'ko-KR'});
             break;
           default:
             await _flutterTts.setVoice({'name': 'ko-kr-x-ism-local', 'locale': 'ko-KR'});
         }
-        
+
         // 오디오 파일 저장 경로
         final tempDir = await getTemporaryDirectory();
         final filePath = '${tempDir.path}/tts_${_uuid.v4()}.mp3';
-        
+
         // 오디오 파일 생성
         debugPrint('VoiceAssistant: 파일로 TTS 생성 시작: $filePath');
         await _flutterTts.synthesizeToFile(text, filePath);
         debugPrint('VoiceAssistant: 파일로 TTS 생성 완료');
-        
+
         return filePath;
       } catch (innerError) {
         debugPrint('VoiceAssistant: 내부 TTS 생성 오류: $innerError');
@@ -548,7 +548,7 @@ class VoiceAssistantService {
       throw Exception('TTS 생성 중 오류: $e');
     }
   }
-  
+
   // 텍스트로 음성 재생
   Future<void> speak(String text, String voiceId) async {
     try {
@@ -570,7 +570,7 @@ class VoiceAssistantService {
           default:
             await _flutterTts.setVoice({'name': 'ko-kr-x-ism-local', 'locale': 'ko-KR'});
         }
-        
+
         await _flutterTts.speak(text);
       }
     } catch (e) {
@@ -578,7 +578,7 @@ class VoiceAssistantService {
       throw Exception('TTS 재생 중 오류: $e');
     }
   }
-  
+
   // 음성 재생 중지
   Future<void> stopSpeaking() async {
     if (_voiceService != null) {
@@ -587,7 +587,7 @@ class VoiceAssistantService {
       await _flutterTts.stop();
     }
   }
-  
+
   // 대화 종료
   Future<void> endConversation() async {
     await stopListening();
@@ -597,7 +597,7 @@ class VoiceAssistantService {
     _transcriptionStreamController?.close();
     _responseStreamController?.close();
   }
-  
+
   // 리소스 해제
   Future<void> dispose() async {
     await stopListening();
@@ -608,17 +608,17 @@ class VoiceAssistantService {
     _responseStreamController?.close();
     await _flutterTts.stop();
     await _speechRecognizer.dispose();
-    
+
     // Whisper 서비스 정리
     await _whisperService?.dispose();
   }
-  
+
   // 컨텍스트 인식 대화를 위한 LangChain 체인 생성
   Future<void> _initConversationChain() async {
     if (_apiKey == null || _apiKey!.isEmpty) {
       return;
     }
-    
+
     try {
       // 1. GPT-4o 채팅 모델 초기화 🚀
       final llm = ChatOpenAI(
@@ -627,7 +627,7 @@ class VoiceAssistantService {
         maxTokens: 2000,        // 더 길고 상세한 응답 가능
         model: 'gpt-4o',        // 최신 GPT-4o 모델!
       );
-      
+
       // 2. GPT-4o 최적화된 고급 시스템 프롬프트 템플릿
       final promptTemplate = ChatPromptTemplate.fromPromptMessages([
         SystemChatMessagePromptTemplate.fromTemplate("""
@@ -664,7 +664,7 @@ class VoiceAssistantService {
 """),
         HumanChatMessagePromptTemplate.fromTemplate("{question}"),
       ]);
-      
+
       // 3. 대화 메모리 설정
       final memory = ConversationBufferMemory(
         returnMessages: true,
@@ -672,7 +672,7 @@ class VoiceAssistantService {
         outputKey: 'answer',
         memoryKey: 'chat_history',
       );
-      
+
       // 4. 대화 체인 생성
       _conversationChain = ConversationChain(
         llm: llm,
@@ -684,28 +684,28 @@ class VoiceAssistantService {
       debugPrint('대화 체인 초기화 중 오류: $e');
     }
   }
-  
+
   // 음성 인식 상태 확인
   bool get isListening => _isListening;
-  
+
   // 응답 처리 상태 확인
   bool get isProcessing => _isProcessing;
-  
+
   // Whisper 사용 여부 확인
   bool get isUsingWhisper => _recognitionMode == SpeechRecognitionMode.whisper;
-  
+
   // 현재 인식 모드 가져오기
   SpeechRecognitionMode get recognitionMode => _recognitionMode;
-  
+
   // Whisper 서비스 초기화 상태 확인
   bool get isWhisperServiceReady => _whisperService != null;
-  
+
   // API 키 설정 상태 확인
   bool get isApiKeySet => _apiKey != null && _apiKey!.isNotEmpty;
-  
+
   // 음성 인식 사용 가능 여부 확인
   bool get isSpeechRecognitionAvailable {
-    return _recognitionMode == SpeechRecognitionMode.native || 
-           (_recognitionMode == SpeechRecognitionMode.whisper && isWhisperServiceReady && isApiKeySet);
+    return _recognitionMode == SpeechRecognitionMode.native ||
+        (_recognitionMode == SpeechRecognitionMode.whisper && isWhisperServiceReady && isApiKeySet);
   }
 }

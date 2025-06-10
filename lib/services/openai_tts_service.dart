@@ -16,11 +16,11 @@ import 'package:tiiun/utils/logger.dart'; // Import AppLogger
 class OpenAiTtsApiException extends AppError { // Inherit from AppError
   OpenAiTtsApiException(String message, {int? statusCode, dynamic originalException})
       : super(
-          type: AppErrorType.server, // Or other appropriate type
-          message: message,
-          code: statusCode?.toString() ?? 'openai_tts_api_error', // statusCode is mapped to 'code'
-          originalException: originalException,
-        );
+    type: AppErrorType.server, // Or other appropriate type
+    message: message,
+    code: statusCode?.toString() ?? 'openai_tts_api_error', // statusCode is mapped to 'code'
+    originalException: originalException,
+  );
 
   // Add the statusCode getter to expose the integer status code
   @override // Marking as override if AppError also defines 'statusCode' (though it doesn't by default)
@@ -34,11 +34,11 @@ class OpenAiTtsApiException extends AppError { // Inherit from AppError
 class NetworkException extends AppError { // Inherit from AppError
   NetworkException(String message, {dynamic originalException})
       : super(
-          type: AppErrorType.network,
-          message: message,
-          code: 'network_error',
-          originalException: originalException,
-        );
+    type: AppErrorType.network,
+    message: message,
+    code: 'network_error',
+    originalException: originalException,
+  );
 }
 
 final openAiTtsServiceProvider = Provider<OpenAiTtsService>((ref) {

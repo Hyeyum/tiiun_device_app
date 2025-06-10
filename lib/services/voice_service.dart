@@ -433,7 +433,7 @@ class VoiceService {
     return ErrorHandler.safeFuture(() async {
       // voiceId가 지정되지 않은 경우 저장된 설정 사용
       String effectiveVoiceId = voiceId ?? await VoicePreferences.getSelectedVoiceId();
-      
+
       if (_isOfflineMode || _openAIapiKey.isEmpty) {
         AppLogger.info('VoiceService: Offline or OpenAI API key not set. Using on-device TTS (FlutterTTS).');
         await speakWithFlutterTts(text); // Directly speaks, no file URL returned
@@ -472,7 +472,7 @@ class VoiceService {
     return ErrorHandler.safeFuture(() async {
       // voiceId가 지정되지 않은 경우 저장된 설정 사용
       String effectiveVoiceId = voiceId ?? await VoicePreferences.getSelectedVoiceId();
-      
+
       AppLogger.debug('VoiceService: textToSpeechFile called with text: "$text", voiceId: $effectiveVoiceId');
 
       if (text.isEmpty) {
@@ -565,7 +565,7 @@ class VoiceService {
             AppLogger.warning('VoiceService: User not logged in, using local file instead of uploading');
           }
           */
-          
+
           // 로컬 파일만 사용 (Firebase Storage 없이)
           AppLogger.info('VoiceService: Using local file only (Firebase Storage disabled)');
           // resultUrl = audioFilePath; (이미 설정됨)
@@ -662,7 +662,7 @@ class VoiceService {
 
       // voiceId가 지정되지 않은 경우 저장된 설정 사용
       String effectiveVoiceId = voiceId ?? await VoicePreferences.getSelectedVoiceId();
-      
+
       AppLogger.info('VoiceService: Starting speech for text: "$text", voiceId: $effectiveVoiceId');
 
       // Stop any ongoing playback before starting new speech

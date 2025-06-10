@@ -43,11 +43,11 @@ class ConversationService {
         .orderBy('updated_at', descending: true) // updated_at으로 수정
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) {
-            // Firestore 데이터에서 객체 생성시 Conversation.fromFirestore에서 자동 디코딩 처리
-            return Conversation.fromFirestore(doc);
-          }).toList();
-        });
+      return snapshot.docs.map((doc) {
+        // Firestore 데이터에서 객체 생성시 Conversation.fromFirestore에서 자동 디코딩 처리
+        return Conversation.fromFirestore(doc);
+      }).toList();
+    });
   }
 
   // 대화 목록 가져오기 (Future) - 스키마에 맞게 수정
@@ -108,7 +108,7 @@ class ConversationService {
       }
 
       final now = DateTime.now();
-      
+
       // 실제 Firestore 스키마에 맞는 데이터
       final conversationData = {
         'user_id': userId,
@@ -151,7 +151,7 @@ class ConversationService {
       // 생성된 대화 반환
       final createdDoc = await docRef.get();
       return Conversation.fromFirestore(createdDoc);
-      
+
     } catch (e) {
       debugPrint('대화 생성 오류: $e');
       throw Exception('대화를 생성할 수 없습니다: $e');
@@ -215,10 +215,10 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at 업데이트
-            'last_message_id': messageRef.id, // last_message_id 업데이트
-            'message_count': FieldValue.increment(1), // message_count 업데이트
-          });
+        'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at 업데이트
+        'last_message_id': messageRef.id, // last_message_id 업데이트
+        'message_count': FieldValue.increment(1), // message_count 업데이트
+      });
 
       // 메시지 객체 반환 (원본 내용 반환)
       return newMessage.copyWith(id: messageRef.id);
@@ -241,31 +241,31 @@ class ConversationService {
         .orderBy('created_at') // 필드명 반영
         .snapshots()
         .map((snapshot) {
-          if (_enableDebugLog) {
-            debugPrint('---------- 메시지 로드 시작 ----------');
-            debugPrint('메시지 갯수: ${snapshot.docs.length}');
-          }
+      if (_enableDebugLog) {
+        debugPrint('---------- 메시지 로드 시작 ----------');
+        debugPrint('메시지 갯수: ${snapshot.docs.length}');
+      }
 
-          final messages = <Message>[];
-          
-          for (final doc in snapshot.docs) {
-            try {
-              // ✅ 각 메시지별로 개별 에러 처리
-              final message = Message.fromFirestore(doc);
-              messages.add(message);
-            } catch (e) {
-              debugPrint('메시지 변환 오류: $e, documentId: ${doc.id}');
-              // ✅ 오류 발생한 메시지는 스킵하고 계속 진행
-              continue;
-            }
-          }
+      final messages = <Message>[];
 
-          return messages;
-        })
+      for (final doc in snapshot.docs) {
+        try {
+          // ✅ 각 메시지별로 개별 에러 처리
+          final message = Message.fromFirestore(doc);
+          messages.add(message);
+        } catch (e) {
+          debugPrint('메시지 변환 오류: $e, documentId: ${doc.id}');
+          // ✅ 오류 발생한 메시지는 스킵하고 계속 진행
+          continue;
+        }
+      }
+
+      return messages;
+    })
         .handleError((error) {
-          debugPrint('메시지 스트림 오류: $error');
-          throw ErrorHandler.handleException(error);
-        });
+      debugPrint('메시지 스트림 오류: $error');
+      throw ErrorHandler.handleException(error);
+    });
   }
 
   // 대화 제목 업데이트 (스키마에 맞게 수정)
@@ -278,9 +278,9 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'title': encodedTitle,
-            'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at로 수정
-          });
+        'title': encodedTitle,
+        'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at로 수정
+      });
     } catch (e) {
       debugPrint('대화 제목 업데이트 오류: $e');
       throw Exception('대화 제목을 업데이트할 수 없습니다: $e');
@@ -297,9 +297,9 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'summary': encodedSummary,
-            'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at로 수정
-          });
+        'summary': encodedSummary,
+        'updated_at': Timestamp.fromDate(DateTime.now()), // updated_at로 수정
+      });
     } catch (e) {
       debugPrint('대화 요약 업데이트 오류: $e');
       throw Exception('대화 요약을 업데이트할 수 없습니다: $e');
@@ -316,9 +316,9 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'tags': encodedTags,
-            'updatedAt': DateTime.now(),
-          });
+        'tags': encodedTags,
+        'updatedAt': DateTime.now(),
+      });
     } catch (e) {
       debugPrint('대화 태그 업데이트 오류: $e');
       throw Exception('대화 태그를 업데이트할 수 없습니다: $e');
@@ -332,10 +332,10 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'averageMoodScore': moodScore,
-            'moodChangeDetected': moodChanged,
-            'updatedAt': DateTime.now(),
-          });
+        'averageMoodScore': moodScore,
+        'moodChangeDetected': moodChanged,
+        'updatedAt': DateTime.now(),
+      });
     } catch (e) {
       debugPrint('대화 감정 점수 업데이트 오류: $e');
       throw Exception('대화 감정 점수를 업데이트할 수 없습니다: $e');
@@ -349,9 +349,9 @@ class ConversationService {
           .collection('conversations')
           .doc(conversationId)
           .update({
-            'isCompleted': true,
-            'updatedAt': DateTime.now(),
-          });
+        'isCompleted': true,
+        'updatedAt': DateTime.now(),
+      });
     } catch (e) {
       debugPrint('대화 완료 상태 업데이트 오류: $e');
       throw Exception('대화 완료 상태를 업데이트할 수 없습니다: $e');
@@ -611,9 +611,9 @@ class ConversationService {
                   .collection('messages')
                   .doc(messageDoc.id)
                   .update({
-                    'content': encodedContent,
-                    'updatedAt': DateTime.now(),
-                  });
+                'content': encodedContent,
+                'updatedAt': DateTime.now(),
+              });
 
               messagesFixed++;
             } catch (e) {

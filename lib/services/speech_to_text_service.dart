@@ -21,7 +21,7 @@ class SpeechToTextService {
 
   // 상태 관련 컨트롤러
   final StreamController<SpeechRecognitionState> _stateController =
-      StreamController<SpeechRecognitionState>.broadcast();
+  StreamController<SpeechRecognitionState>.broadcast();
 
   // 상태 스트림
   Stream<SpeechRecognitionState> get stateStream => _stateController.stream;

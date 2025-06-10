@@ -87,7 +87,7 @@ class _LangChainTestPageState extends ConsumerState<LangChainTestPage> {
     try {
       final langchainService = ref.read(langchainServiceProvider);
       final sentiment = await langchainService.analyzeSentimentWithLangChain(message);
-      
+
       setState(() {
         _messages.add(TestMessage(
           text: '감정 분석 결과:\n'
@@ -204,37 +204,37 @@ class _LangChainTestPageState extends ConsumerState<LangChainTestPage> {
           Expanded(
             child: _messages.isEmpty
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.eco, // 식물 아이콘 추가
-                          size: 64,
-                          color: AppColors.grey400,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'GPT-4o AI와 대화해보세요!',
-                          style: AppTypography.label.withColor(AppColors.grey600),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '고급 감정 분석 • 깊이 있는 상담 • 맞춤형 솔루션 • 🌱 식물 페르소나',
-                          style: AppTypography.b2.withColor(AppColors.grey500),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final message = _messages[index];
-                      return TestMessageWidget(message: message);
-                    },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.eco, // 식물 아이콘 추가
+                    size: 64,
+                    color: AppColors.grey400,
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'GPT-4o AI와 대화해보세요!',
+                    style: AppTypography.label.withColor(AppColors.grey600),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '고급 감정 분석 • 깊이 있는 상담 • 맞춤형 솔루션 • 🌱 식물 페르소나',
+                    style: AppTypography.b2.withColor(AppColors.grey500),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+                : ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return TestMessageWidget(message: message);
+              },
+            ),
           ),
 
           // 로딩 표시
@@ -354,8 +354,8 @@ class TestMessageWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: message.isUser 
-            ? MainAxisAlignment.end 
+        mainAxisAlignment: message.isUser
+            ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
           if (!message.isUser)
@@ -364,47 +364,47 @@ class TestMessageWidget extends StatelessWidget {
               height: 32,
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: message.isError 
+                color: message.isError
                     ? Colors.red.shade100
                     : message.isAnalysis
-                        ? Colors.purple.shade100
-                        : message.ttsSource?.contains('plant') == true
-                            ? Colors.green.shade100  // 식물 페르소나 배경
-                            : AppColors.main100,
+                    ? Colors.purple.shade100
+                    : message.ttsSource?.contains('plant') == true
+                    ? Colors.green.shade100  // 식물 페르소나 배경
+                    : AppColors.main100,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
-                message.isError 
+                message.isError
                     ? Icons.error_outline
                     : message.isAnalysis
-                        ? Icons.psychology
-                        : message.ttsSource?.contains('plant') == true
-                            ? Icons.eco  // 식물 페르소나 아이콘
-                            : Icons.smart_toy,
+                    ? Icons.psychology
+                    : message.ttsSource?.contains('plant') == true
+                    ? Icons.eco  // 식물 페르소나 아이콘
+                    : Icons.smart_toy,
                 size: 18,
-                color: message.isError 
+                color: message.isError
                     ? Colors.red.shade700
                     : message.isAnalysis
-                        ? Colors.purple.shade700
-                        : message.ttsSource?.contains('plant') == true
-                            ? Colors.green.shade700  // 식물 페르소나 색상
-                            : AppColors.main700,
+                    ? Colors.purple.shade700
+                    : message.ttsSource?.contains('plant') == true
+                    ? Colors.green.shade700  // 식물 페르소나 색상
+                    : AppColors.main700,
               ),
             ),
-          
+
           Flexible(
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: message.isUser 
+                color: message.isUser
                     ? AppColors.main500
                     : message.isError
-                        ? Colors.red.shade50
-                        : message.isAnalysis
-                            ? Colors.purple.shade50
-                            : message.ttsSource?.contains('plant') == true
-                                ? Colors.green.shade50  // 식물 페르소나 메시지 배경
-                                : AppColors.grey100,
+                    ? Colors.red.shade50
+                    : message.isAnalysis
+                    ? Colors.purple.shade50
+                    : message.ttsSource?.contains('plant') == true
+                    ? Colors.green.shade50  // 식물 페르소나 메시지 배경
+                    : AppColors.grey100,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -442,7 +442,7 @@ class TestMessageWidget extends StatelessWidget {
               ),
             ),
           ),
-          
+
           if (message.isUser)
             Container(
               width: 32,

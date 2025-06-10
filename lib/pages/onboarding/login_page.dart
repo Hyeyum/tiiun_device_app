@@ -18,7 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  
+
   // 이메일/비밀번호 로그인 관련
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Google 계정으로 로그인
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         // 사용자가 로그인을 취소한 경우
         Navigator.of(context, rootNavigator: true).pop();
@@ -188,19 +188,19 @@ class _LoginPageState extends State<LoginPage> {
         print('Google 로그인 성공: ${user.email}');
         print('사용자 UID: ${user.uid}');
         print('표시 이름: ${user.displayName}');
-        
+
         // 홈페이지로 이동
         _navigateToHome();
       } else {
         throw Exception('사용자 정보를 가져올 수 없습니다.');
       }
-      
+
     } catch (e) {
       // 로딩 다이얼로그 닫기
       if (Navigator.canPop(context)) {
         Navigator.of(context, rootNavigator: true).pop();
       }
-      
+
       // 에러 처리
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -240,13 +240,13 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         print('이메일 로그인 성공: ${user.email}');
         print('사용자 UID: ${user.uid}');
-        
+
         // 홈페이지로 이동
         _navigateToHome();
       } else {
         throw Exception('사용자 정보를 가져올 수 없습니다.');
       }
-      
+
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
@@ -265,7 +265,7 @@ class _LoginPageState extends State<LoginPage> {
         default:
           errorMessage = '로그인에 실패했습니다: ${e.message}';
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
@@ -330,7 +330,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // 비밀번호 입력 필드
           TextField(
             controller: _passwordController,
@@ -350,7 +350,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // 로그인 버튼
           Container(
             width: double.infinity,
@@ -367,21 +367,21 @@ class _LoginPageState extends State<LoginPage> {
               ),
               child: _isLoading
                   ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
                   : Text(
-                      '로그인',
-                      style: AppTypography.largeBtn.withColor(Colors.white),
-                    ),
+                '로그인',
+                style: AppTypography.largeBtn.withColor(Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 12),
-          
+
           // 회원가입 링크
           GestureDetector(
             onTap: _navigateToSignup,

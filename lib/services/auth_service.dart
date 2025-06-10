@@ -216,25 +216,25 @@ class AuthService {
     final now = DateTime.now();
 
     return UserModel(
-        uid: uid,
-        email: user?.email ?? 'user@example.com',
-        userName: user?.displayName ?? '사용자', // 이 부분은 저장하지 않으므로 인코딩 불필요
-        createdAt: now,
-        preferredVoice: 'default', // 기본 음성 설정
-        notificationYn: true, // 이메일 알림 여부
-        gender: null, // 선택사항
-        language: 'ko', // 기본 언어 설정 (필요 시 수정)
-        preferredActivities: [], // 활동 선호 항목 (초기값은 빈 리스트로 설정)
-        profileImageUrl: null, // 기본 프로필 이미지 없음
-        useWhisperApiYn: true, // Whisper API 사용 여부
-        themeMode: 'light', // 기본 테마 모드 (예: 'light' 또는 'dark')
-        autoSaveConversationsYn: true, // 대화 자동 저장 여부
-        ageGroup: '20s', // 연령대 (예시값, 실제 입력 필요)
-        // 새로 추가된 알림 설정 필드들에 기본값 추가
-        emailNotifications: true, // 기본값 true
-        dailyCheckInReminder: false, // 기본값 false
-        weeklySummaryEnabled: true, // 기본값 true
-      );
+      uid: uid,
+      email: user?.email ?? 'user@example.com',
+      userName: user?.displayName ?? '사용자', // 이 부분은 저장하지 않으므로 인코딩 불필요
+      createdAt: now,
+      preferredVoice: 'default', // 기본 음성 설정
+      notificationYn: true, // 이메일 알림 여부
+      gender: null, // 선택사항
+      language: 'ko', // 기본 언어 설정 (필요 시 수정)
+      preferredActivities: [], // 활동 선호 항목 (초기값은 빈 리스트로 설정)
+      profileImageUrl: null, // 기본 프로필 이미지 없음
+      useWhisperApiYn: true, // Whisper API 사용 여부
+      themeMode: 'light', // 기본 테마 모드 (예: 'light' 또는 'dark')
+      autoSaveConversationsYn: true, // 대화 자동 저장 여부
+      ageGroup: '20s', // 연령대 (예시값, 실제 입력 필요)
+      // 새로 추가된 알림 설정 필드들에 기본값 추가
+      emailNotifications: true, // 기본값 true
+      dailyCheckInReminder: false, // 기본값 false
+      weeklySummaryEnabled: true, // 기본값 true
+    );
   }
 
   // Update user model
