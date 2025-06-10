@@ -10,7 +10,9 @@ import '../design_system/colors.dart';
 import '../design_system/typography.dart';
 
 class AdvancedVoiceChatPage extends ConsumerStatefulWidget {
-  const AdvancedVoiceChatPage({super.key});
+  final bool autoStart; // 자동으로 음성 대화 시작 여부
+
+  const AdvancedVoiceChatPage({super.key, this.autoStart = false});
 
   @override
   ConsumerState<AdvancedVoiceChatPage> createState() => _AdvancedVoiceChatPageState();
@@ -41,6 +43,10 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
   dynamic _voiceAssistantService;
   dynamic _voiceService;
   bool _servicesInitialized = false;
+
+  // 자동 재시작 타이머
+  Timer? _autoRestartTimer;
+  bool _shouldAutoRestart = false;
 
   @override
   void initState() {
@@ -73,8 +79,31 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       curve: Curves.easeInOut,
     ));
 
+    // autoStart 모드 설정
+    _shouldAutoRestart = widget.autoStart;
+
     // 초기화 및 환영 메시지
     _initializeServices();
+  }
+
+  // 처리 중 상태를 강제로 리셋하는 메서드
+  void _forceResetProcessingState() {
+    setState(() {
+      _isProcessing = false;
+      _isListening = false;
+      _isPlaying = false;
+    });
+
+    // 애니메이션 중지
+    _pulseController.stop();
+    _waveController.stop();
+
+    // 스트림 구독 취소
+    _transcriptionSubscription?.cancel();
+    _responseSubscription?.cancel();
+
+    // 자동 재시작 타이머 취소
+    _autoRestartTimer?.cancel();
   }
 
   Future<void> _initializeServices() async {
@@ -96,16 +125,66 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
         // 음성 비서 대화 시작
         await voiceAssistant.startConversation(_conversationId!);
 
-        // 환영 메시지 추가
-        _addAIMessage('안녕하세요! 저는 틔운의 AI 버디입니다. 아래 마이크 버튼을 눌러 음성으로 편하게 대화해보세요! 🎤');
+        // autoStart에 따라 다른 환영 메시지
+        if (widget.autoStart) {
+          // motion 감지로 시작된 경우
+          _addAIMessage('안녕하세요! 움직임이 감지되어 대화를 시작합니다. 현재 식물 상태를 확인하고 있어요. 무엇을 도와드릴까요? 🌱');
 
-        setState(() {
-          _currentStatus = '음성 버튼을 눌러 대화를 시작하세요';
-        });
+          setState(() {
+            _currentStatus = '환영 메시지 재생 후 자동으로 음성 인식을 시작합니다...';
+          });
+
+          // 환영 메시지 TTS 재생 후 자동으로 음성 인식 시작
+          _playWelcomeMessageAndStartListening();
+        } else {
+          // 수동으로 시작된 경우
+          _addAIMessage('안녕하세요! 저는 틔운의 AI 버디입니다. 아래 마이크 버튼을 눌러 음성으로 편하게 대화해보세요! 🎤');
+
+          setState(() {
+            _currentStatus = '음성 버튼을 눌러 대화를 시작하세요';
+          });
+        }
       }
     } catch (e) {
       print('서비스 초기화 오류: $e');
       _addSystemMessage('서비스 초기화 중 오류가 발생했습니다: $e');
+    }
+  }
+
+  // 환영 메시지 재생 후 자동으로 음성 인식 시작
+  Future<void> _playWelcomeMessageAndStartListening() async {
+    if (!mounted || !_servicesInitialized || _voiceService == null) return;
+
+    try {
+      final welcomeMessage = '안녕하세요! 움직임이 감지되어 대화를 시작합니다. 현재 식물 상태를 확인하고 있어요. 무엇을 도와드릴까요?';
+
+      setState(() {
+        _currentStatus = '환영 인사를 들려드릴게요... 🎵';
+      });
+
+      // 환영 메시지 음성 재생
+      final voiceService = _voiceService;
+      await voiceService.speak(welcomeMessage);
+
+      // 잠깐 대기 후 음성 인식 자동 시작
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      if (mounted) {
+        setState(() {
+          _currentStatus = '자동으로 음성 인식을 시작합니다. 말씀해주세요!';
+        });
+
+        // 자동으로 음성 인식 시작
+        await _startListening();
+      }
+
+    } catch (e) {
+      print('환영 메시지 재생 오류: $e');
+      if (mounted) {
+        setState(() {
+          _currentStatus = '환영 메시지 재생 중 오류가 발생했습니다. 마이크 버튼을 눌러 대화를 시작하세요.';
+        });
+      }
     }
   }
 
@@ -117,9 +196,12 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       // 음성 인식 중지
       await _stopListening();
     } else if (_isProcessing) {
-      // 처리 중에는 새로운 요청 차단
-      _addSystemMessage('현재 응답을 처리 중입니다. 잠시만 기다려주세요.');
-      return;
+      // 처리 중에는 강제로 중지하고 상태 리셋
+      print('⚠️ 처리 중 상태를 강제로 리셋합니다.');
+      _forceResetProcessingState();
+      _addSystemMessage('처리를 중단하고 새로운 음성 인식을 시작합니다.');
+      await Future.delayed(const Duration(milliseconds: 500));
+      await _startListening();
     } else {
       // 음성 인식 시작
       await _startListening();
@@ -129,6 +211,13 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
   Future<void> _startListening() async {
     // mounted 체크 추가
     if (!mounted || !_servicesInitialized || _voiceAssistantService == null) return;
+
+    // 혹시 모를 중복 호출 방지
+    if (_isListening || _isProcessing) {
+      print('⚠️ 이미 음성 인식 중이거나 처리 중입니다. 상태를 리셋합니다.');
+      _forceResetProcessingState();
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
 
     try {
       final voiceAssistant = _voiceAssistantService;
@@ -151,11 +240,18 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
         },
         onError: (error) {
           print('음성 인식 오류: $error');
-          setState(() {
-            _isListening = false;
-            _currentStatus = '음성 인식 오류: $error';
-          });
+          if (mounted) {
+            setState(() {
+              _isListening = false;
+              _currentStatus = '음성 인식 오류: $error';
+            });
+          }
           _pulseController.stop();
+
+          // autoStart 모드에서는 오류 후 자동 재시작
+          if (_shouldAutoRestart && mounted) {
+            _scheduleAutoRestart();
+          }
         },
         onDone: () {
           print('음성 인식 스트림 종료');
@@ -164,11 +260,18 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
 
     } catch (e) {
       print('음성 인식 시작 오류: $e');
-      setState(() {
-        _isListening = false;
-        _currentStatus = '음성 인식 시작 실패: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isListening = false;
+          _currentStatus = '음성 인식 시작 실패: $e';
+        });
+      }
       _pulseController.stop();
+
+      // autoStart 모드에서는 오류 후 자동 재시작
+      if (_shouldAutoRestart && mounted) {
+        _scheduleAutoRestart();
+      }
     }
   }
 
@@ -209,6 +312,11 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       });
       _pulseController.stop();
 
+      // autoStart 모드에서는 오류 후 자동 재시작
+      if (_shouldAutoRestart) {
+        _scheduleAutoRestart();
+      }
+
     } else if (result.startsWith('[listening_stopped]')) {
       // 인식 중지됨
       setState(() {
@@ -220,6 +328,9 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       // 최종 텍스트가 있으면 AI 응답 처리
       if (_currentTranscription.isNotEmpty) {
         _processUserInput(_currentTranscription);
+      } else if (_shouldAutoRestart) {
+        // 자동 모드에서 텍스트가 없으면 재시작
+        _scheduleAutoRestart();
       }
 
     } else if (result.startsWith('[interim]')) {
@@ -252,11 +363,22 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
           _currentStatus = '음성이 인식되지 않았습니다. 다시 시도해주세요.';
         });
       }
+
+      // autoStart 모드에서는 빈 입력 후 자동 재시작
+      if (_shouldAutoRestart) {
+        _scheduleAutoRestart();
+      }
       return;
     }
 
     // mounted 체크 추가
     if (!mounted || !_servicesInitialized || _voiceAssistantService == null) return;
+
+    // 이미 처리 중인지 확인
+    if (_isProcessing) {
+      print('⚠️ 이미 처리 중입니다. 요청을 무시합니다.');
+      return;
+    }
 
     try {
       final voiceAssistant = _voiceAssistantService;
@@ -281,12 +403,19 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
         },
         onError: (error) {
           print('AI 응답 처리 오류: $error');
-          setState(() {
-            _isProcessing = false;
-            _currentStatus = 'AI 응답 오류: $error';
-          });
+          if (mounted) {
+            setState(() {
+              _isProcessing = false;
+              _currentStatus = 'AI 응답 오류: $error';
+            });
+          }
           _waveController.stop();
           _addSystemMessage('응답 생성 중 오류가 발생했습니다: $error');
+
+          // autoStart 모드에서는 오류 후 자동 재시작
+          if (_shouldAutoRestart) {
+            _scheduleAutoRestart();
+          }
         },
         onDone: () {
           print('AI 응답 처리 완료');
@@ -295,11 +424,18 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
 
     } catch (e) {
       print('AI 응답 처리 시작 오류: $e');
-      setState(() {
-        _isProcessing = false;
-        _currentStatus = '응답 처리 시작 실패: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+          _currentStatus = '응답 처리 시작 실패: $e';
+        });
+      }
       _waveController.stop();
+
+      // autoStart 모드에서는 오류 후 자동 재시작
+      if (_shouldAutoRestart) {
+        _scheduleAutoRestart();
+      }
     }
   }
 
@@ -337,9 +473,13 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       if (audioPath != null && audioPath.isNotEmpty) {
         _playAIResponse(audioPath);
       } else {
-        setState(() {
-          _currentStatus = '음성 버튼을 눌러 대화를 계속하세요';
-        });
+        if (_shouldAutoRestart) {
+          _scheduleAutoRestart();
+        } else {
+          setState(() {
+            _currentStatus = '음성 버튼을 눌러 대화를 계속하세요';
+          });
+        }
       }
 
     } else if (status == 'error') {
@@ -350,6 +490,11 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       });
       _waveController.stop();
       _addSystemMessage('응답 생성 실패: ${responseData['message']}');
+
+      // autoStart 모드에서는 오류 후 자동 재시작
+      if (_shouldAutoRestart) {
+        _scheduleAutoRestart();
+      }
     }
   }
 
@@ -371,8 +516,19 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
           if (mounted) {
             setState(() {
               _isPlaying = false;
-              _currentStatus = '음성 버튼을 눌러 대화를 계속하세요';
             });
+
+            // autoStart 모드에서는 자동으로 다음 음성 인식 시작
+            if (_shouldAutoRestart) {
+              setState(() {
+                _currentStatus = '계속 말씀해주세요. 자동으로 음성을 인식합니다...';
+              });
+              _scheduleAutoRestart();
+            } else {
+              setState(() {
+                _currentStatus = '음성 버튼을 눌러 대화를 계속하세요';
+              });
+            }
           }
         },
       );
@@ -382,10 +538,33 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
       if (mounted) {
         setState(() {
           _isPlaying = false;
-          _currentStatus = '음성 재생 오류: $e';
         });
+
+        if (_shouldAutoRestart) {
+          setState(() {
+            _currentStatus = '음성 재생 오류가 발생했습니다. 계속 말씀해주세요...';
+          });
+          _scheduleAutoRestart();
+        } else {
+          setState(() {
+            _currentStatus = '음성 재생 오류: $e';
+          });
+        }
       }
     }
+  }
+
+  // 자동 재시작 스케줄링
+  void _scheduleAutoRestart() {
+    if (!_shouldAutoRestart || !mounted) return;
+
+    _autoRestartTimer?.cancel();
+    _autoRestartTimer = Timer(const Duration(milliseconds: 2000), () {
+      if (mounted && !_isListening && !_isProcessing && !_isPlaying) {
+        print('🔄 자동으로 음성 인식을 재시작합니다');
+        _startListening();
+      }
+    });
   }
 
   void _addSystemMessage(String message) {
@@ -441,6 +620,7 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
 
   @override
   void dispose() {
+    _autoRestartTimer?.cancel();
     _transcriptionSubscription?.cancel();
     _responseSubscription?.cancel();
     _pulseController.dispose();
@@ -588,6 +768,8 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
                     ),
                     const SizedBox(height: 8),
                     Text(
+                      widget.autoStart ?
+                      '자동 모드 - 연속 음성 대화' :
                       'LangChain 기반 지능형 대화 시스템',
                       style: AppTypography.b2.copyWith(
                         color: AppColors.main500,
@@ -628,23 +810,25 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.main100,
+                      color: widget.autoStart ? Colors.green.shade50 : AppColors.main100,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: AppColors.main300),
+                      border: Border.all(
+                        color: widget.autoStart ? Colors.green.shade300 : AppColors.main300,
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          Icons.smart_toy,
+                          widget.autoStart ? Icons.auto_awesome : Icons.smart_toy,
                           size: 16,
-                          color: AppColors.main600,
+                          color: widget.autoStart ? Colors.green.shade600 : AppColors.main600,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'AI 모드',
+                          widget.autoStart ? '자동 모드' : 'AI 모드',
                           style: AppTypography.b3.copyWith(
-                            color: AppColors.main600,
+                            color: widget.autoStart ? Colors.green.shade600 : AppColors.main600,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -708,12 +892,12 @@ class _AdvancedVoiceChatPageState extends ConsumerState<AdvancedVoiceChatPage>
                                   const SizedBox(width: 8),
                                   Text(
                                     _isListening
-                                        ? '음성 인식 중지'
+                                        ? (widget.autoStart ? '음성 인식 중...' : '음성 인식 중지')
                                         : _isProcessing
-                                        ? '생각 중...'
+                                        ? (_isProcessing && !widget.autoStart ? '강제 중지' : '생각 중...')
                                         : _isPlaying
                                         ? '재생 중...'
-                                        : '말하기',
+                                        : (widget.autoStart ? '자동 음성 대화' : '말하기'),
                                     style: AppTypography.b1.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,

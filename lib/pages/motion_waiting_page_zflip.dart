@@ -2,10 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async'; // StreamSubscription을 위해 추가
 import '../design_system/colors.dart';
 import '../design_system/typography.dart';
 import '../services/voice_service.dart';
 import '../services/foldable_device_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/foldable_adaptive_widget.dart';
 import 'advanced_voice_chat_page.dart';
 
@@ -31,6 +34,9 @@ class _MotionWaitingPageZFlipState extends ConsumerState<MotionWaitingPageZFlip>
   late AnimationController _fadeController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _fadeAnimation;
+
+  // Firebase 스트림 구독 관리
+  StreamSubscription<DatabaseEvent>? _firebaseSubscription;
 
   @override
   void initState() {
@@ -89,83 +95,83 @@ class _MotionWaitingPageZFlipState extends ConsumerState<MotionWaitingPageZFlip>
 
     try {
       final database = FirebaseDatabase.instance;
-      final motionRef = database.ref('adddelete');
+      final motionRef = database.ref('test'); // Firebase 구조에 맞게 test 경로로 변경
 
-      setState(() {
-        _isConnected = true;
-        _isLoading = false;
-        _connectionStatus = 'Firebase 연결 성공! motion 값 감지 대기 중...';
-      });
+      if (mounted) {
+        setState(() {
+          _isConnected = true;
+          _isLoading = false;
+          _connectionStatus = 'Firebase 연결 성공! motion 값 감지 대기 중...';
+        });
+      }
 
       print('✅ Firebase Realtime Database 연결 성공');
 
-      motionRef.onValue.listen((event) {
+      // StreamSubscription 저장
+      _firebaseSubscription = motionRef.onValue.listen((event) {
         print('💾 Firebase 데이터 수신: ${event.snapshot.value}');
 
         if (event.snapshot.value != null) {
           final data = event.snapshot.value as Map<dynamic, dynamic>;
 
-          // 최신 데이터 찾기
-          int? latestMotion;
-          DateTime? latestTime;
+          // test 경로의 직접 데이터 처리 (단일 센서 데이터)
+          try {
+            final motionValue = data['motion'] as int? ?? 0;
+            final humidityValue = data['humidity'] as int? ?? 0;
+            final timestampStr = data['timestamp'] as String? ?? '';
 
-          data.forEach((key, value) {
-            if (value is Map<dynamic, dynamic> && value['motion'] != null) {
-              try {
-                final motionValue = value['motion'] as int;
-                final timestampStr = value['timestamp'] as String?;
-
-                if (timestampStr != null) {
-                  final timestamp = DateTime.tryParse(timestampStr);
-                  if (timestamp != null) {
-                    if (latestTime == null || timestamp.isAfter(latestTime!)) {
-                      latestTime = timestamp;
-                      latestMotion = motionValue;
-                    }
-                  }
-                }
-              } catch (e) {
-                print('🚨 데이터 파싱 오류: $e');
-              }
+            // mounted 체크 후 setState 호출
+            if (mounted) {
+              setState(() {
+                _currentMotionValue = motionValue;
+                _connectionStatus = 'motion: $motionValue, humidity: $humidityValue (${timestampStr.isNotEmpty ? timestampStr : '시간 불명'})';
+              });
             }
-          });
 
-          if (latestMotion != null) {
-            setState(() {
-              _currentMotionValue = latestMotion;
-              _connectionStatus = 'motion 값: $latestMotion (${latestTime?.toString().split('.')[0] ?? '시간 불명'})';
-            });
-
-            print('🎆 Motion 값 업데이트: $latestMotion');
+            print('🎆 센서 데이터 업데이트 - Motion: $motionValue, Humidity: $humidityValue, Timestamp: $timestampStr');
 
             // motion 값이 1이면 대화 시작
-            if (latestMotion == 1 && !_hasGreeted) {
+            if (motionValue == 1 && !_hasGreeted && mounted) {
               print('🎉 Motion = 1 감지! 대화 시작');
               _startConversation();
+            }
+
+          } catch (e) {
+            print('🚨 데이터 파싱 오류: $e');
+            if (mounted) {
+              setState(() {
+                _connectionStatus = '데이터 파싱 오류: $e';
+              });
             }
           }
         } else {
           print('📁 Firebase 데이터가 null입니다. 대기 상태로 전환...');
-          setState(() {
-            _connectionStatus = 'Firebase 연결됨. 데이터 대기 중...';
-          });
+          if (mounted) {
+            setState(() {
+              _connectionStatus = 'Firebase 연결됨. 데이터 대기 중...';
+            });
+          }
         }
       }, onError: (error) {
         print('🚨 Firebase 연결 오류: $error');
-        setState(() {
-          _isConnected = false;
-          _isLoading = false;
-          _connectionStatus = 'Firebase 연결 오류: $error';
-        });
+        if (mounted) {
+          setState(() {
+            _isConnected = false;
+            _isLoading = false;
+            _connectionStatus = 'Firebase 연결 오류: $error';
+          });
+        }
       });
 
     } catch (e) {
       print('🚨 모니터링 시작 실패: $e');
-      setState(() {
-        _isConnected = false;
-        _isLoading = false;
-        _connectionStatus = '모니터링 시작 실패: $e';
-      });
+      if (mounted) {
+        setState(() {
+          _isConnected = false;
+          _isLoading = false;
+          _connectionStatus = '모니터링 시작 실패: $e';
+        });
+      }
     }
   }
 
@@ -177,10 +183,12 @@ class _MotionWaitingPageZFlipState extends ConsumerState<MotionWaitingPageZFlip>
 
     print('🚀 대화 시작 프로세스 시작...');
 
-    setState(() {
-      _hasGreeted = true;
-      _connectionStatus = '사용자 감지! 대화를 시작합니다...';
-    });
+    if (mounted) {
+      setState(() {
+        _hasGreeted = true;
+        _connectionStatus = '사용자 감지! 대화를 시작합니다...';
+      });
+    }
 
     try {
       print('🎤 음성 서비스로 인사말 재생 시도...');
@@ -195,24 +203,106 @@ class _MotionWaitingPageZFlipState extends ConsumerState<MotionWaitingPageZFlip>
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const AdvancedVoiceChatPage(),
+            builder: (context) => const AdvancedVoiceChatPage(autoStart: true), // autoStart=true로 설정
           ),
         );
         print('🎉 대화 페이지로 이동 완료!');
       }
     } catch (e) {
       print('🚨 대화 시작 오류: $e');
-      setState(() {
-        _connectionStatus = '대화 시작 오류: $e';
-        _hasGreeted = false;
-      });
+      if (mounted) {
+        setState(() {
+          _connectionStatus = '대화 시작 오류: $e';
+          _hasGreeted = false;
+        });
+      }
+    }
+  }
+
+  // 로그아웃 처리
+  Future<void> _handleLogout() async {
+    try {
+      // 확인 다이얼로그 표시
+      final shouldLogout = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('로그아웃'),
+            content: const Text('정말 로그아웃하시겠습니까?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('취소'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('로그아웃'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (shouldLogout == true) {
+        // 로딩 다이얼로그 표시
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+
+        // 로그아웃 처리
+        final authService = ref.read(authServiceProvider);
+        await authService.logout();
+
+        // 로딩 다이얼로그 닫기
+        if (mounted) {
+          Navigator.of(context, rootNavigator: true).pop();
+
+          // 로그인 페이지로 이동
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/login',
+                (route) => false,
+          );
+        }
+      }
+    } catch (e) {
+      // 로딩 다이얼로그 닫기
+      if (mounted) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+
+      // 에러 메시지 표시
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('로그아웃 중 오류가 발생했습니다: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      print('🚨 로그아웃 오류: $e');
     }
   }
 
   @override
   void dispose() {
+    print('🗑️ MotionWaitingPageZFlip dispose 시작');
+
+    // Firebase 스트림 구독 취소
+    _firebaseSubscription?.cancel();
+    _firebaseSubscription = null;
+
+    // 애니메이션 컨트롤러 정리
     _pulseController.dispose();
     _fadeController.dispose();
+
+    print('✅ MotionWaitingPageZFlip dispose 완료');
     super.dispose();
   }
 
@@ -223,6 +313,61 @@ class _MotionWaitingPageZFlipState extends ConsumerState<MotionWaitingPageZFlip>
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('틔운이 대기중'),
+        backgroundColor: AppColors.main800,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (String value) {
+              if (value == 'logout') {
+                _handleLogout();
+              } else if (value == 'settings') {
+                // 설정 페이지로 이동
+                Navigator.pushNamed(context, '/voice_settings');
+              } else if (value == 'conversations') {
+                // 대화 목록 페이지로 이동
+                Navigator.pushNamed(context, '/conversation_list');
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'conversations',
+                child: Row(
+                  children: [
+                    Icon(Icons.chat_bubble_outline),
+                    SizedBox(width: 8),
+                    Text('대화 목록'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings),
+                    SizedBox(width: 8),
+                    Text('설정'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('로그아웃', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
+              ),
+            ],
+            icon: const Icon(Icons.more_vert),
+          ),
+        ],
+      ),
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: ZFlipLayout(

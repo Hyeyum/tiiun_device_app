@@ -14,7 +14,7 @@ class Conversation {
   /// 생성 시간 (Firestore 필수)
   final DateTime createdAt;
 
-  /// 업데이트 시간 (Firestore 필수)  
+  /// 업데이트 시간 (Firestore 필수)
   final DateTime updatedAt;
 
   /// 마지막 메시지 ID (Firestore 필수)
