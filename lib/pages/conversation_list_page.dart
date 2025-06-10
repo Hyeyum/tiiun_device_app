@@ -169,7 +169,7 @@ class _ConversationListPageState extends ConsumerState<ConversationListPage> {
             ? Text('${_selectedConversations.length}개 선택됨')
             : Text(
           '대화 목록',
-          style: AppTypography.h3.copyWith(
+          style: AppTypography.s2.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

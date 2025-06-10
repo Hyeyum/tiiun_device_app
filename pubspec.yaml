@@ -92,6 +92,7 @@ flutter:
     - assets/images/mypage/
     - assets/images/shop/
     - assets/icons/
+    - assets/icons/device/
     - assets/icons/buddy/
     - assets/icons/community/
     - assets/icons/functions/
@@ -118,3 +119,8 @@ flutter:
           weight: 600
         - asset: assets/fonts/Pretendard-Thin.ttf
           weight: 100
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logos/tiiun_device_app_icon.png"

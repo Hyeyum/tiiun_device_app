@@ -127,7 +127,7 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
       appBar: AppBar(
         title: Text(
           '목소리 설정',
-          style: AppTypography.h1.withColor(Colors.white),
+          style: AppTypography.s2.withColor(Colors.white),
         ),
         backgroundColor: AppColors.main800,
         elevation: 0,
@@ -149,12 +149,11 @@ class _VoiceSettingsPageState extends ConsumerState<VoiceSettingsPage> {
                 children: [
                   Text(
                     '음성 어시스턴트 목소리',
-                    style: AppTypography.h3.withColor(AppColors.main800),
+                    style: AppTypography.s2.withColor(AppColors.main800),
                   ),
-                  SizedBox(height: 8),
                   Text(
                     '원하는 목소리를 선택하고 테스트해보세요.',
-                    style: AppTypography.b2.withColor(AppColors.grey600),
+                    style: AppTypography.c2.withColor(AppColors.grey600),
                   ),
                 ],
               ),

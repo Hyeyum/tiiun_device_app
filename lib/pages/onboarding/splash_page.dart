@@ -29,9 +29,9 @@ class _SplashPageState extends State<SplashPage> {
       print('🔍 Current user in splash: ${currentUser?.email ?? "null"}');
 
       if (currentUser != null) {
-        // 로그인된 사용자 - MotionWaitingPageZFlip으로 이동
-        print('🔍 User logged in, going to motion waiting zflip');
-        Navigator.pushReplacementNamed(context, '/motion_waiting_zflip');
+        // 로그인된 사용자 - TiiunWaitingPage로 이동
+        print('🔍 User logged in, going to tiiun waiting');
+        Navigator.pushReplacementNamed(context, '/tiiun_waiting');
       } else {
         // 로그인되지 않은 사용자 - 로그인 페이지로 이동
         print('🔍 User not logged in, going to login');
