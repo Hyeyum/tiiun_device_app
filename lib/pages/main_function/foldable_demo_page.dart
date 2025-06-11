@@ -1,10 +1,10 @@
 // lib/pages/foldable_demo_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/foldable_device_service.dart';
-import '../widgets/foldable_adaptive_widget.dart';
-import '../design_system/colors.dart';
-import '../design_system/typography.dart';
+import 'package:tiiun/services/foldable_device_service.dart';
+import 'package:tiiun/widgets/foldable_adaptive_widget.dart';
+import 'package:tiiun/design_system/colors.dart';
+import 'package:tiiun/design_system/typography.dart';
 
 class FoldableDemoPage extends ConsumerStatefulWidget {
   const FoldableDemoPage({super.key});

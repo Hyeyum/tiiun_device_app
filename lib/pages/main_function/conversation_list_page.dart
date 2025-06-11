@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../services/conversation_list_service.dart';
-import '../models/conversation_model.dart';
-import '../models/message_model.dart';
-import '../design_system/colors.dart';
-import '../design_system/typography.dart';
+import '../../services/conversation_list_service.dart';
+import '../../models/conversation_model.dart';
+import '../../models/message_model.dart';
+import '../../design_system/colors.dart';
+import '../../design_system/typography.dart';
 
 class ConversationListPage extends ConsumerStatefulWidget {
   const ConversationListPage({super.key});

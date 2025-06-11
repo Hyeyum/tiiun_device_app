@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart'; // SVG 지원 추가
-import '../services/realtime_database_service.dart';
-import '../services/auth_service.dart';
-import '../services/voice_service.dart'; // 추가
-import '../services/remote_config_service.dart'; // Remote Config 서비스 추가
-import '../design_system/colors.dart';
-import '../design_system/typography.dart';
+import '../../services/realtime_database_service.dart';
+import '../../services/auth_service.dart';
+import '../../services/voice_service.dart'; // 추가
+import '../../services/remote_config_service.dart'; // Remote Config 서비스 추가
+import '../../design_system/colors.dart';
+import '../../design_system/typography.dart';
 
 class RealtimeChatPage extends ConsumerStatefulWidget {
   const RealtimeChatPage({super.key});
