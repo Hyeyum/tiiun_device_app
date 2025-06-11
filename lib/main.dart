@@ -4,18 +4,18 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:tiiun/firebase_options.dart';
-import 'package:tiiun/pages/realtime_chat_page.dart';
-import 'package:tiiun/pages/advanced_voice_chat_page.dart'; // 새로운 고급 음성 대화 페이지 추가
+import 'package:tiiun/pages/main_function/realtime_chat_page.dart';
+import 'package:tiiun/pages/main_function/advanced_voice_chat_page.dart'; // 새로운 고급 음성 대화 페이지 추가
 // 제거됨: motion_waiting_page.dart, motion_waiting_page_simple.dart, motion_waiting_page_zflip.dart - 사용하지 않음
-import 'package:tiiun/pages/tiiun_waiting_page.dart'; // 새로운 틔운 대기화면
-import 'package:tiiun/pages/foldable_demo_page.dart'; // 폴더블 데모 페이지 추가
+import 'package:tiiun/pages/main_function/tiiun_waiting_page.dart'; // 새로운 틔운 대기화면
+import 'package:tiiun/pages/main_function/foldable_demo_page.dart'; // 폴더블 데모 페이지 추가
 import 'package:tiiun/services/foldable_device_service.dart'; // 폴더블 디바이스 서비스 추가
 import 'package:tiiun/pages/onboarding/login_page.dart';
 import 'package:tiiun/pages/onboarding/signup_page.dart';
 import 'package:tiiun/pages/onboarding/splash_page.dart';
 import 'package:tiiun/pages/settings/voice_settings_page.dart'; // 추가
 import 'package:tiiun/pages/settings/langchain_test_page.dart'; // 추가
-import 'package:tiiun/pages/conversation_list_page.dart'; // 대화 목록 페이지 추가
+import 'package:tiiun/pages/main_function/conversation_list_page.dart'; // 대화 목록 페이지 추가
 import 'package:tiiun/design_system/colors.dart';
 import 'package:tiiun/design_system/typography.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

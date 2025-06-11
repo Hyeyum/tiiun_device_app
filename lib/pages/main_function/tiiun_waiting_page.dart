@@ -5,11 +5,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tiiun/design_system/typography.dart';
 import 'dart:async';
-import '../design_system/colors.dart';
-import '../services/voice_service.dart';
-import '../services/foldable_device_service.dart';
-import '../services/auth_service.dart';
-import 'advanced_voice_chat_page.dart';
+import 'package:tiiun/design_system/colors.dart';
+import 'package:tiiun/services/voice_service.dart';
+import 'package:tiiun/services/foldable_device_service.dart';
+import 'package:tiiun/services/auth_service.dart';
+import 'package:tiiun/pages/main_function/advanced_voice_chat_page.dart';
 import 'dart:ui';
 
 class TiiunWaitingPage extends ConsumerStatefulWidget {
@@ -356,7 +356,7 @@ class _TiiunWaitingPageState extends ConsumerState<TiiunWaitingPage>
           // 시간 텍스트
           Positioned(
             left: 20,
-            top: 36,
+            top: 40,
             child: Container(
               // width: 156,
               // height: 66,

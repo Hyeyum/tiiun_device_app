@@ -2,12 +2,12 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
-import '../models/sensor_data_model.dart';
-import '../models/message_model.dart';
-import '../utils/logger.dart';
-import '../services/voice_assistant_service.dart';
-import '../services/conversation_service.dart';
-import '../services/auth_service.dart';
+import '../../models/sensor_data_model.dart';
+import '../../models/message_model.dart';
+import '../../utils/logger.dart';
+import '../../services/voice_assistant_service.dart';
+import '../../services/conversation_service.dart';
+import '../../services/auth_service.dart';
 
 // Sensor Monitoring 서비스 Provider
 final sensorMonitoringServiceProvider = Provider<SensorMonitoringService>((ref) {
